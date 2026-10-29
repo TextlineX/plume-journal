@@ -1,0 +1,134 @@
+---
+// 首页页边栏：内容区够宽（≥ 版心宽度）时出现在目录右侧，窄时不显示（归档页里有同样的分类和标签）。
+// 内容是读者在首页最常要的三样：按分类找、按标签找、订阅。
+import { categoryUrl, countBy, type Post, tagUrl } from "../lib/posts";
+
+interface Props {
+	posts: Post[];
+}
+const { posts } = Astro.props;
+const cats = countBy(posts, "category");
+const tags = countBy(posts, "tags").slice(0, 12);
+const updated = posts
+	.filter((p) => p.data.updated)
+	.sort((a, b) => b.data.updated!.valueOf() - a.data.updated!.valueOf())
+	.slice(0, 3);
+---
+<aside class="margin" aria-label="页边">
+	{cats.length > 0 && (
+		<section class="mg-block">
+			<h2 class="mg-title"><span class="latin">Categories</span>分类</h2>
+			<ul class="mg-cats">
+				{cats.map(([c, n]) => (
+					<li><a href={categoryUrl(c)}><span>{c}</span><span class="mg-n latin">{n}</span></a></li>
+				))}
+			</ul>
+		</section>
+	)}
+	{tags.length > 0 && (
+		<section class="mg-block">
+			<h2 class="mg-title"><span class="latin">Tags</span>标签</h2>
+			<ul class="mg-tags">
+				{tags.map(([t]) => <li><a href={tagUrl(t)}># {t}</a></li>)}
+			</ul>
+		</section>
+	)}
+	{updated.length > 0 && (
+		<section class="mg-block">
+			<h2 class="mg-title"><span class="latin">Revised</span>最近修订</h2>
+			<ul class="mg-cats">
+				{updated.map((p) => <li><a href={`/posts/${p.id}/`}><span>{p.data.title}</span></a></li>)}
+			</ul>
+		</section>
+	)}
+	<section class="mg-block">
+		<h2 class="mg-title"><span class="latin">Follow</span>订阅</h2>
+		<p class="mg-text">用阅读器订阅 <a href="/rss.xml">RSS</a>，新文章会自动送到。按 <kbd>/</kbd> 可以随时搜索。</p>
+	</section>
+</aside>
+
+<style>
+	.margin {
+		display: flex;
+		flex-direction: column;
+		gap: var(--s5);
+	}
+	.mg-title {
+		display: flex;
+		align-items: baseline;
+		gap: var(--s2);
+		padding-bottom: var(--s2);
+		margin-bottom: var(--s2);
+		border-bottom: 1px solid var(--c-border);
+		font-size: var(--fs-caption);
+		line-height: var(--lh-caption);
+		font-weight: 400;
+		color: var(--c-muted);
+	}
+	.mg-title .latin {
+		font-style: italic;
+		font-size: var(--fs-small);
+		color: var(--c-accent);
+	}
+	.mg-cats {
+		list-style: none;
+		padding: 0;
+	}
+	.mg-cats a {
+		display: flex;
+		justify-content: space-between;
+		gap: var(--s2);
+		padding: 6px 0;
+		font-family: var(--font-serif);
+		font-weight: 600;
+		font-size: var(--fs-small);
+		line-height: var(--lh-small);
+		color: var(--c-secondary);
+		transition: color var(--dur-short3) var(--ease-standard);
+	}
+	.mg-cats a:hover {
+		color: var(--c-link);
+	}
+	.mg-n {
+		color: var(--c-muted);
+	}
+	.mg-tags {
+		list-style: none;
+		padding: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--s2);
+	}
+	.mg-tags a {
+		display: inline-flex;
+		align-items: center;
+		height: 28px;
+		padding: 0 10px;
+		border-radius: 999px;
+		border: 1px solid var(--c-hairline);
+		font-size: var(--fs-caption);
+		color: var(--c-secondary);
+	}
+	.mg-tags a:hover {
+		background: var(--c-container);
+		border-color: var(--c-container);
+		color: var(--c-on-container);
+	}
+	.mg-text {
+		font-size: var(--fs-small);
+		line-height: var(--lh-small);
+		color: var(--c-secondary);
+	}
+	.mg-text a {
+		color: var(--c-link);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+	kbd {
+		font-family: var(--font-mono);
+		font-size: var(--fs-caption);
+		padding: 0 6px;
+		border-radius: 6px;
+		border: 1px solid var(--c-hairline);
+	}
+</style>

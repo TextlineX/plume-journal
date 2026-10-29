@@ -17,6 +17,15 @@ const year = new Date().getFullYear();
 		padding: 0 var(--s7) var(--s5) var(--s6);
 		max-width: calc(var(--content-max) + var(--s7) + var(--s6));
 	}
+	@media (min-width: 1600px) {
+		.footer {
+			max-width: var(--sheet-w);
+			padding-inline: 0;
+		}
+		.footer > * {
+			max-width: var(--content-max);
+		}
+	}
 	.footer .rule {
 		margin-bottom: var(--s3);
 	}

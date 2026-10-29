@@ -155,6 +155,12 @@ const toc = headings.filter((h) => h.depth <= 3 && h.slug !== "footnote-label");
 	.post {
 		max-width: calc(var(--measure) + var(--s6) + var(--aside-w));
 	}
+	/* 超宽屏：文章（正文 + 页边目录）在版心里居中 */
+	@media (min-width: 1600px) {
+		.post {
+			margin-inline: auto;
+		}
+	}
 	.back {
 		display: inline-flex;
 		align-items: center;

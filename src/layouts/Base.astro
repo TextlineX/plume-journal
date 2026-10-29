@@ -92,7 +92,9 @@ const icon = {
 			<div class="frame-main">
 				<TopBar />
 				<main id="main" class="frame-content" transition:animate={pageAnim}>
-					<slot />
+					<div class="sheet">
+						<slot />
+					</div>
 				</main>
 				<Footer />
 			</div>
@@ -153,6 +155,20 @@ const icon = {
 	}
 	.frame-main :global(.topbar) {
 		display: none;
+	}
+	.sheet {
+		max-width: var(--sheet-w);
+	}
+	/* 超宽屏：版心在内容区里居中，左右留白对称 */
+	@media (min-width: 1600px) {
+		.frame-content {
+			padding-inline: var(--s6);
+		}
+		.sheet,
+		.frame-main :global(.footer) {
+			margin-inline: auto;
+			width: 100%;
+		}
 	}
 	@media (max-width: 1279px) {
 		.frame-content {

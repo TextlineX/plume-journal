@@ -55,6 +55,8 @@
 	--measure: 680px; /* 正文行长：40 字 × 17px（W3C clreq 横排 ≤ 48 字） */
 	--content-max: 760px;
 	--aside-w: 224px;
+	/* 版心：正文栏 + 栏距 + 页边栏。超宽屏上整组居中 */
+	--sheet-w: calc(var(--content-max) + var(--s7) + var(--aside-w) + 32px);
 
 	/* ---- 圆角 ---- */
 	--r-sm: 8px; --r-btn: 12px; --r-card: 16px;
@@ -64,6 +66,49 @@
 	--ease-emph-dec: cubic-bezier(0.05, 0.7, 0.1, 1);
 	--ease-emph-acc: cubic-bezier(0.3, 0, 0.8, 0.15);
 	--dur-short3: 150ms; --dur-short4: 200ms; --dur-medium2: 300ms; --dur-long2: 500ms;
+}
+
+/* ---- 大屏：整套字号、行长、栏宽按屏幕宽度升两档 ----
+   观看距离随屏幕变大而变远，17px 正文在 27 英寸 2560 屏上显得过小；
+   两档都保持「一行约 40 字」（--measure = 40 × 正文字号）和 4pt 基线（行高为 4 的倍数）。 */
+@media (min-width: 1800px) {
+	:root {
+		--fs-display: 58px; --lh-display: 72px;
+		--fs-h1: 46px; --lh-h1: 60px;
+		--fs-h2: 28px; --lh-h2: 40px;
+		--fs-h3: 22px; --lh-h3: 32px;
+		--fs-body: 18px; --lh-body: 32px;
+		--fs-small: 15px; --lh-small: 24px;
+		--fs-caption: 14px; --lh-caption: 20px;
+		--portrait-w: clamp(260px, 25vw, 480px);
+		--tabs-w: 80px;
+		--measure: 720px;
+		--content-max: 800px;
+		--aside-w: 256px;
+	}
+	:root[data-portrait="slim"] {
+		--portrait-w: clamp(200px, 15vw, 300px);
+	}
+}
+@media (min-width: 2400px) {
+	:root {
+		--fs-display: 66px; --lh-display: 80px;
+		--fs-h1: 52px; --lh-h1: 68px;
+		--fs-h2: 32px; --lh-h2: 44px;
+		--fs-h3: 24px; --lh-h3: 36px;
+		--fs-body: 20px; --lh-body: 36px;
+		--fs-small: 16px; --lh-small: 28px;
+		--fs-caption: 15px; --lh-caption: 24px;
+		--portrait-w: clamp(260px, 24vw, 600px);
+		--tabs-w: 88px;
+		--measure: 800px;
+		--content-max: 880px;
+		--aside-w: 288px;
+		--s6: 56px; --s7: 72px; --s8: 112px;
+	}
+	:root[data-portrait="slim"] {
+		--portrait-w: clamp(200px, 14vw, 360px);
+	}
 }
 
 /* 阅读页：角色栏收窄（<html data-portrait="slim">，由 Base 布局按页面设置） */

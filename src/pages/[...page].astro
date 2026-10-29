@@ -2,6 +2,7 @@
 // 首页 = 手帐的扉页 + 目录。第 1 页有刊头；之后的页只有目录标题。
 import type { GetStaticPaths, Page } from "astro";
 import EmptyState from "../components/EmptyState.astro";
+import HomeMargin from "../components/HomeMargin.astro";
 import Icon from "../components/Icon.astro";
 import Pagination from "../components/Pagination.astro";
 import Portrait from "../components/Portrait.astro";
@@ -12,10 +13,10 @@ import { profile, site } from "../site.config";
 
 export const getStaticPaths = (async ({ paginate }) => {
 	const posts = await getPosts();
-	return paginate(posts, { pageSize: site.postsPerPage });
+	return paginate(posts, { pageSize: site.postsPerPage, props: { all: posts } });
 }) satisfies GetStaticPaths;
 
-const { page } = Astro.props as { page: Page<Post> };
+const { page, all } = Astro.props as { page: Page<Post>; all: Post[] };
 const first = page.currentPage === 1;
 const latest = page.data[0];
 const issueDate = latest ? `${latest.data.published.getUTCFullYear()}.${pad(latest.data.published.getUTCMonth() + 1)}` : "";
@@ -46,6 +47,7 @@ const issueDate = latest ? `${latest.data.published.getUTCFullYear()}.${pad(late
 		</>
 	)}
 
+	<div class="home-grid">
 	<section class="contents" aria-labelledby="contents-title">
 		<div class="ct-head">
 			<h2 id="contents-title" class="ct-title serif">目录</h2>
@@ -58,6 +60,8 @@ const issueDate = latest ? `${latest.data.published.getUTCFullYear()}.${pad(late
 		</div>
 		<Pagination page={page} />
 	</section>
+	<HomeMargin posts={all} />
+	</div>
 </Base>
 
 <style>
@@ -118,6 +122,25 @@ const issueDate = latest ? `${latest.data.published.getUTCFullYear()}.${pad(late
 
 	.contents {
 		max-width: var(--content-max);
+		min-width: 0;
+	}
+	/* 页边栏：内容区放得下「正文栏 + 栏距 + 页边栏」时才出现 */
+	.home-grid > :global(.margin) {
+		display: none;
+	}
+	@container (min-width: 1100px) {
+		.home-grid {
+			display: grid;
+			grid-template-columns: minmax(0, var(--content-max)) var(--aside-w);
+			gap: var(--s7);
+			align-items: start;
+		}
+		.home-grid > :global(.margin) {
+			display: flex;
+			position: sticky;
+			top: var(--s6);
+			padding-top: 52px;
+		}
 	}
 	.ct-head {
 		display: flex;
