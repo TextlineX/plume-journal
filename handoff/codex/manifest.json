@@ -1,0 +1,232 @@
+{
+  "$comment": "Codex 工作包的产出清单（v2：只做角色）。路径不含扩展名，ext 是允许的扩展名。由 handoff/codex/scripts/check-handoff.mjs 读取。背景图已由博客维护者用 CSS 实现，backgrounds 为空。",
+  "input": [
+    {
+      "path": "handoff/codex/input/character/fullbody",
+      "ext": [
+        "png"
+      ],
+      "minHeight": 1536,
+      "alpha": true,
+      "required": true
+    },
+    {
+      "path": "handoff/codex/input/character/palette",
+      "ext": [
+        "md"
+      ],
+      "required": true
+    },
+    {
+      "path": "handoff/codex/input/license",
+      "ext": [
+        "md"
+      ],
+      "required": true
+    },
+    {
+      "path": "handoff/codex/input/brief",
+      "ext": [
+        "md"
+      ],
+      "required": false
+    }
+  ],
+  "backgrounds": [],
+  "live2d": {
+    "dir": "public/live2d/mascot",
+    "manifest": "mascot.json",
+    "canvasHeight": 1200,
+    "maxTotalKB": 2560,
+    "requiredLayers": [
+      "hair_back",
+      "body",
+      "head",
+      "eyes_open",
+      "eyes_closed",
+      "eyes_smile",
+      "mouth_closed",
+      "mouth_open",
+      "mouth_smile",
+      "hair_front"
+    ],
+    "requiredExpressions": [
+      "default",
+      "happy",
+      "talk",
+      "sleepy"
+    ],
+    "requiredPivots": [
+      "neck",
+      "waist"
+    ],
+    "runtime": "src/scripts/mascot/index.ts",
+    "runtimeMaxGzipKB": 60,
+    "paused": true
+  },
+  "stickers": [
+    {
+      "path": "src/assets/stickers/reading",
+      "ext": [
+        "webp"
+      ],
+      "width": 512,
+      "height": 512,
+      "maxKB": 120,
+      "alpha": true,
+      "required": true
+    },
+    {
+      "path": "src/assets/stickers/lost",
+      "ext": [
+        "webp"
+      ],
+      "width": 512,
+      "height": 512,
+      "maxKB": 120,
+      "alpha": true,
+      "required": true
+    },
+    {
+      "path": "src/assets/images/avatar",
+      "ext": [
+        "webp"
+      ],
+      "width": 512,
+      "height": 512,
+      "maxKB": 150,
+      "alpha": true,
+      "required": true
+    },
+    {
+      "path": "src/assets/stickers/happy",
+      "ext": [
+        "webp"
+      ],
+      "width": 512,
+      "height": 512,
+      "maxKB": 120,
+      "alpha": true,
+      "required": false
+    },
+    {
+      "path": "src/assets/stickers/surprised",
+      "ext": [
+        "webp"
+      ],
+      "width": 512,
+      "height": 512,
+      "maxKB": 120,
+      "alpha": true,
+      "required": false
+    },
+    {
+      "path": "src/assets/stickers/thinking",
+      "ext": [
+        "webp"
+      ],
+      "width": 512,
+      "height": 512,
+      "maxKB": 120,
+      "alpha": true,
+      "required": false
+    },
+    {
+      "path": "src/assets/stickers/empty",
+      "ext": [
+        "webp"
+      ],
+      "width": 512,
+      "height": 512,
+      "maxKB": 120,
+      "alpha": true,
+      "required": false
+    },
+    {
+      "path": "src/assets/stickers/headphones",
+      "ext": [
+        "webp"
+      ],
+      "width": 512,
+      "height": 512,
+      "maxKB": 120,
+      "alpha": true,
+      "required": false
+    },
+    {
+      "path": "src/assets/stickers/sleepy",
+      "ext": [
+        "webp"
+      ],
+      "width": 512,
+      "height": 512,
+      "maxKB": 120,
+      "alpha": true,
+      "required": false
+    },
+    {
+      "path": "src/assets/stickers/shy",
+      "ext": [
+        "webp"
+      ],
+      "width": 512,
+      "height": 512,
+      "maxKB": 120,
+      "alpha": true,
+      "required": false
+    },
+    {
+      "path": "src/assets/stickers/angry",
+      "ext": [
+        "webp"
+      ],
+      "width": 512,
+      "height": 512,
+      "maxKB": 120,
+      "alpha": true,
+      "required": false
+    }
+  ],
+  "icons": [
+    {
+      "path": "public/favicon/favicon-32",
+      "ext": [
+        "png"
+      ],
+      "width": 32,
+      "height": 32,
+      "maxKB": 20,
+      "required": true
+    },
+    {
+      "path": "public/favicon/favicon-32-dark",
+      "ext": [
+        "png"
+      ],
+      "width": 32,
+      "height": 32,
+      "maxKB": 20,
+      "required": true
+    },
+    {
+      "path": "public/favicon/apple-touch-icon",
+      "ext": [
+        "png"
+      ],
+      "width": 180,
+      "height": 180,
+      "maxKB": 60,
+      "required": true
+    },
+    {
+      "path": "public/favicon/icon-512",
+      "ext": [
+        "png"
+      ],
+      "width": 512,
+      "height": 512,
+      "maxKB": 200,
+      "required": true
+    }
+  ]
+}

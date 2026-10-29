@@ -1,0 +1,84 @@
+---
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
+import { getEntry, render } from "astro:content";
+import Icon from "../components/Icon.astro";
+import Base from "../layouts/Base.astro";
+import { profile, site } from "../site.config";
+import "../styles/prose.css";
+
+const entry = await getEntry("pages", "about");
+if (!entry) throw new Error("缺少 src/content/pages/about.md");
+const { Content } = await render(entry);
+// Codex 交付的 Q 版头像（src/assets/images/avatar.webp）存在时优先使用
+const q = import.meta.glob<{ default: ImageMetadata }>("/src/assets/images/avatar.webp", { eager: true });
+const avatar = Object.values(q)[0]?.default ?? profile.avatar;
+---
+<Base title="关于" description={`关于${site.author}`} slim>
+	<header class="page-head about-head">
+		<Image src={avatar} alt="" width={96} height={96} densities={[1, 2]} class="avatar" />
+		<div>
+			<span class="eyebrow">About</span>
+			<h1>{site.author}</h1>
+			<p>{site.intro}</p>
+			<ul class="links">
+				{profile.links.map((l) => (
+					<li><a href={l.url} target={l.url.startsWith("http") ? "_blank" : undefined} rel="me noopener"><Icon name={l.icon} size={18} />{l.name}</a></li>
+				))}
+			</ul>
+		</div>
+	</header>
+	<div class="prose about-body">
+		<Content />
+	</div>
+</Base>
+
+<style>
+	.about-head {
+		display: flex;
+		gap: var(--s5);
+		align-items: flex-start;
+		max-width: var(--content-max);
+		border-bottom: 1px solid var(--c-border);
+		margin-bottom: var(--s6);
+	}
+	.about-head :global(.avatar) {
+		width: 96px;
+		height: 96px;
+		flex: none;
+		border-radius: 24px;
+		object-fit: cover;
+		outline: 1px solid var(--c-gold);
+		outline-offset: 4px;
+		margin-top: var(--s2);
+	}
+	.links {
+		list-style: none;
+		padding: 0;
+		margin-top: var(--s3);
+		display: flex;
+		gap: var(--s2);
+	}
+	.links a {
+		height: 36px;
+		display: inline-flex;
+		align-items: center;
+		gap: var(--s2);
+		padding: 0 14px;
+		border-radius: 999px;
+		border: 1px solid var(--c-hairline);
+		font-size: var(--fs-small);
+		color: var(--c-secondary);
+	}
+	.links a:hover {
+		background: var(--c-container);
+		border-color: var(--c-container);
+		color: var(--c-on-container);
+	}
+	@media (max-width: 767px) {
+		.about-head {
+			flex-direction: column;
+			gap: var(--s3);
+		}
+	}
+</style>

@@ -1,0 +1,161 @@
+---
+// 页面骨架：[角色栏 | 竖排索引签 | 内容]。
+// 角色栏、搜索、音乐用 transition:persist 跨页保留：换页时只有内容区淡入淡出，角色始终在场。
+import { ClientRouter, fade } from "astro:transitions";
+import "../styles/base.css";
+import Footer from "../components/Footer.astro";
+import IndexTabs from "../components/IndexTabs.astro";
+import MusicPanel from "../components/MusicPanel.astro";
+import Portrait from "../components/Portrait.astro";
+import SearchDialog from "../components/SearchDialog.astro";
+import TopBar from "../components/TopBar.astro";
+import fs from "node:fs";
+import { site } from "../site.config";
+
+interface Props {
+	title?: string;
+	description?: string;
+	ogType?: "website" | "article";
+	/** 阅读页：角色栏收窄，把宽度让给正文和页边目录 */
+	slim?: boolean;
+}
+const { title, description = site.subtitle, ogType = "website", slim = false } = Astro.props;
+const fullTitle = title ? `${title} · ${site.title}` : `${site.title} · ${site.subtitle}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+// Codex 交付的网站图标（交接包 03）存在时优先使用，否则用现有的占位图标
+const has = (f: string) => fs.existsSync(`public/favicon/${f}`);
+const icon = {
+	light: has("favicon-32.png") ? "/favicon/favicon-32.png" : "/favicon/favicon-light-32.png",
+	dark: has("favicon-32-dark.png") ? "/favicon/favicon-32-dark.png" : "/favicon/favicon-dark-32.png",
+	touch: has("apple-touch-icon.png") ? "/favicon/apple-touch-icon.png" : "/favicon/favicon-light-180.png",
+};
+---
+<!doctype html>
+<html lang={site.lang} data-theme="dark" data-portrait={slim ? "slim" : "wide"}>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{fullTitle}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={canonical} />
+		<meta property="og:type" content={ogType} />
+		<meta property="og:title" content={title ?? site.title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonical} />
+		<link rel="alternate" type="application/rss+xml" title={site.title} href="/rss.xml" />
+		<link rel="sitemap" href="/sitemap-index.xml" />
+		<link rel="icon" href={icon.light} media="(prefers-color-scheme: light)" />
+		<link rel="icon" href={icon.dark} media="(prefers-color-scheme: dark)" />
+		<link rel="apple-touch-icon" href={icon.touch} />
+		<meta name="theme-color" content="#17152a" />
+		<!-- 深浅模式：在首屏绘制前确定，避免闪烁。默认深色（设计决定：「薰衣草夜」为默认） -->
+		<script is:inline>
+			(() => {
+				let t = "dark";
+				try {
+					t = localStorage.getItem("theme") || "dark";
+				} catch (e) {}
+				document.documentElement.dataset.theme = t;
+			})();
+		</script>
+		<ClientRouter fallback="swap" />
+	</head>
+	<body>
+		<a class="skip" href="#main">跳到正文</a>
+		<div class="frame">
+			<aside class="frame-portrait" transition:persist="portrait" transition:animate="none">
+				<Portrait />
+			</aside>
+			<div class="frame-tabs" transition:animate="none">
+				<IndexTabs />
+			</div>
+			<div class="frame-main">
+				<TopBar />
+				<main id="main" class="frame-content" transition:animate={fade({ duration: "0.3s" })}>
+					<slot />
+				</main>
+				<Footer />
+			</div>
+		</div>
+
+		<div transition:persist="overlays">
+			<SearchDialog />
+			<MusicPanel />
+			<audio id="bgm" preload="none"></audio>
+		</div>
+
+		<script>
+			import { initGlobal } from "../scripts/global";
+			initGlobal();
+		</script>
+	</body>
+</html>
+
+<style>
+	.skip {
+		position: absolute;
+		left: var(--s3);
+		top: -64px;
+		z-index: 100;
+		padding: 12px var(--s3);
+		border-radius: var(--r-btn);
+		background: var(--c-accent);
+		color: var(--c-on-accent);
+	}
+	.skip:focus {
+		top: var(--s3);
+	}
+	.frame {
+		display: grid;
+		grid-template-columns: var(--portrait-w) var(--tabs-w) minmax(0, 1fr);
+		min-height: 100vh;
+	}
+	.frame-portrait,
+	.frame-tabs {
+		position: sticky;
+		top: 0;
+		height: 100vh;
+		height: 100dvh;
+	}
+	.frame-main {
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+	}
+	.frame-content {
+		container-type: inline-size;
+		flex: 1;
+		padding: var(--s8) var(--s7) var(--s7) var(--s6);
+	}
+	.frame-main :global(.topbar) {
+		display: none;
+	}
+	@media (max-width: 1279px) {
+		.frame-content {
+			padding: var(--s7) var(--s6) var(--s6) var(--s5);
+		}
+	}
+	@media (max-width: 1023px) {
+		.frame {
+			display: block;
+		}
+		.frame-portrait,
+		.frame-tabs {
+			display: none;
+		}
+		.frame-main :global(.topbar) {
+			display: flex;
+		}
+		.frame-content {
+			padding: var(--s6) var(--s5) var(--s6);
+			width: 100%;
+			max-width: calc(var(--content-max) + 2 * var(--s5));
+			margin: 0 auto;
+		}
+	}
+	@media (max-width: 767px) {
+		.frame-content {
+			padding: var(--s5) var(--s3) var(--s6);
+		}
+	}
+</style>

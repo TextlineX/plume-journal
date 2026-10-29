@@ -1,0 +1,99 @@
+---
+// 分类与标签索引：分类用文字链 + 篇数，标签用细框胶囊。当前项高亮。
+import { categoryUrl, countBy, type Post, tagUrl } from "../lib/posts";
+
+interface Props {
+	posts: Post[];
+	current?: { type: "tag" | "category"; value: string };
+}
+const { posts, current } = Astro.props;
+const cats = countBy(posts, "category");
+const tags = countBy(posts, "tags");
+const is = (type: "tag" | "category", v: string) => current?.type === type && current.value === v;
+---
+<div class="terms">
+	<div class="term-row">
+		<span class="term-label caption">分类</span>
+		<ul class="cats">
+			<li><a href="/archive/" class:list={["cat", { active: !current }]}>全部<span class="n">{posts.length}</span></a></li>
+			{cats.map(([c, n]) => (
+				<li><a href={categoryUrl(c)} class:list={["cat", { active: is("category", c) }]} aria-current={is("category", c) ? "page" : undefined}>{c}<span class="n">{n}</span></a></li>
+			))}
+		</ul>
+	</div>
+	<div class="term-row">
+		<span class="term-label caption">标签</span>
+		<ul class="tags">
+			{tags.map(([t, n]) => (
+				<li><a href={tagUrl(t)} class:list={["tag", { active: is("tag", t) }]} aria-current={is("tag", t) ? "page" : undefined}># {t}<span class="n">{n}</span></a></li>
+			))}
+		</ul>
+	</div>
+</div>
+
+<style>
+	.terms {
+		max-width: var(--content-max);
+		display: grid;
+		gap: var(--s3);
+		padding: var(--s4) 0;
+		margin-bottom: var(--s6);
+		border-top: 1px solid var(--c-border);
+		border-bottom: 1px solid var(--c-border);
+	}
+	.term-row {
+		display: grid;
+		grid-template-columns: 40px minmax(0, 1fr);
+		gap: var(--s3);
+		align-items: start;
+	}
+	.term-label {
+		line-height: 32px;
+	}
+	ul {
+		list-style: none;
+		padding: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--s2);
+	}
+	.cat,
+	.tag {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		height: 32px;
+		padding: 0 12px;
+		border-radius: 999px;
+		font-size: var(--fs-small);
+		color: var(--c-secondary);
+		transition: background-color var(--dur-short3) var(--ease-standard), color var(--dur-short3) var(--ease-standard);
+	}
+	.cat {
+		font-family: var(--font-serif);
+		font-weight: 600;
+	}
+	.tag {
+		border: 1px solid var(--c-hairline);
+		font-size: var(--fs-caption);
+	}
+	.n {
+		font-family: var(--font-latin);
+		font-size: var(--fs-small);
+		color: var(--c-muted);
+	}
+	.cat:hover,
+	.tag:hover {
+		background: var(--c-container);
+		color: var(--c-on-container);
+	}
+	.cat.active,
+	.tag.active {
+		background: var(--c-container);
+		border-color: var(--c-container);
+		color: var(--c-on-container);
+	}
+	.active .n {
+		color: var(--c-on-container);
+	}
+</style>

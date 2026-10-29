@@ -1,0 +1,125 @@
+---
+// 角色栏：桌面端左侧整栏，换页时保持不动（transition:persist）。
+// 右边缘是扇贝蕾丝：取自角色长手套和裙摆的花边——半圆齿 + 一列针孔 + 一条金线。
+// 立绘只有一张，光由画里自带的轮廓光负责，栏内不画任何光效。
+import { getImage } from "astro:assets";
+import { character } from "../site.config";
+
+interface Props {
+	variant?: "column" | "cover";
+}
+const { variant = "column" } = Astro.props;
+const w = variant === "column" ? 900 : 780;
+const [day, night] = await Promise.all([
+	getImage({ src: character.day, width: w, format: "webp", quality: 88 }),
+	getImage({ src: character.night, width: w, format: "webp", quality: 88 }),
+]);
+const pos = `${Math.round(character.focusX * 100)}% ${Math.round(character.focusY * 100)}%`;
+---
+<div class:list={["portrait", `portrait--${variant}`]} aria-hidden="true">
+	<div class="portrait-paper">
+		<img class="pt-day" src={day.src} alt="" width={day.attributes.width} height={day.attributes.height} style={`object-position:${pos}`} fetchpriority="high" decoding="async" />
+		<img class="pt-night" src={night.src} alt="" width={night.attributes.width} height={night.attributes.height} style={`object-position:${pos}`} decoding="async" />
+	</div>
+	<div class="portrait-lace"></div>
+</div>
+
+<style>
+	.portrait {
+		position: relative;
+		height: 100%;
+		/* 蕾丝齿：半径 10，节距 20 */
+		--lace-r: 10px;
+		--lace-pitch: 20px;
+	}
+	.portrait-paper {
+		position: absolute;
+		inset: 0;
+		overflow: hidden;
+		background: var(--portrait-bg);
+	}
+	.portrait-paper img {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		filter: var(--portrait-shadow);
+		animation: pt-in var(--dur-long2) var(--ease-emph-dec) both;
+	}
+	/* 窄栏（阅读页）：栏宽只有 200–248，裁切点再右移，让脸留在栏中线 */
+	:global([data-portrait="slim"]) .portrait--column img {
+		object-position: 84% 4% !important;
+	}
+	.pt-night {
+		display: none;
+	}
+	:global([data-theme="dark"]) .pt-day {
+		display: none;
+	}
+	:global([data-theme="dark"]) .pt-night {
+		display: block;
+	}
+	@keyframes pt-in {
+		from {
+			opacity: 0;
+			transform: translateY(12px);
+		}
+	}
+
+	/* ---- 竖栏：右边缘蕾丝 ----
+	   纸面用遮罩裁成扇贝齿（矩形 + 一列半圆），深浅两套都不需要另配填色；
+	   针孔是页面底色的小圆点，金线是一条虚线 */
+	.portrait--column .portrait-paper {
+		-webkit-mask:
+			linear-gradient(#000 0 0) left / calc(100% - var(--lace-r)) 100% no-repeat,
+			radial-gradient(circle at 0 50%, #000 calc(var(--lace-r) - 0.5px), transparent var(--lace-r)) right top / var(--lace-r) var(--lace-pitch) repeat-y;
+		mask:
+			linear-gradient(#000 0 0) left / calc(100% - var(--lace-r)) 100% no-repeat,
+			radial-gradient(circle at 0 50%, #000 calc(var(--lace-r) - 0.5px), transparent var(--lace-r)) right top / var(--lace-r) var(--lace-pitch) repeat-y;
+	}
+	.portrait--column .portrait-lace {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		right: calc(var(--lace-r) + 6px);
+		width: 4px;
+		pointer-events: none;
+		background: radial-gradient(circle, var(--c-page) 1.5px, transparent 2px) center top calc(var(--lace-pitch) / 2) / 4px var(--lace-pitch) repeat-y;
+	}
+	.portrait--column .portrait-lace::before {
+		content: "";
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: -6px;
+		width: 1px;
+		background: repeating-linear-gradient(180deg, var(--c-gold) 0 6px, transparent 6px 10px);
+		opacity: 0.6;
+	}
+
+	/* ---- 封面（手机/平板首页）：下边缘蕾丝 ---- */
+	.portrait--cover {
+		height: 400px;
+	}
+	.portrait--cover .portrait-paper {
+		-webkit-mask:
+			linear-gradient(#000 0 0) top / 100% calc(100% - var(--lace-r)) no-repeat,
+			radial-gradient(circle at 50% 0, #000 calc(var(--lace-r) - 0.5px), transparent var(--lace-r)) left bottom / var(--lace-pitch) var(--lace-r) repeat-x;
+		mask:
+			linear-gradient(#000 0 0) top / 100% calc(100% - var(--lace-r)) no-repeat,
+			radial-gradient(circle at 50% 0, #000 calc(var(--lace-r) - 0.5px), transparent var(--lace-r)) left bottom / var(--lace-pitch) var(--lace-r) repeat-x;
+	}
+	.portrait--cover .portrait-lace {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: calc(var(--lace-r) + 6px);
+		height: 4px;
+		pointer-events: none;
+		background: radial-gradient(circle, var(--c-page) 1.5px, transparent 2px) left calc(var(--lace-pitch) / 2) center / var(--lace-pitch) 4px repeat-x;
+	}
+	.portrait--cover .portrait-paper img {
+		object-position: 40% 6% !important;
+	}
+</style>

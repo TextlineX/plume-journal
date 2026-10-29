@@ -1,0 +1,76 @@
+---
+import Sticker from "../components/Sticker.astro";
+import Base from "../layouts/Base.astro";
+---
+<Base title="页面不见了">
+	<section class="nf">
+		<div class="nf-mark" aria-hidden="true">
+			<Sticker name="lost" size={96}><span class="nf-diamond"></span></Sticker>
+		</div>
+		<p class="eyebrow">404 · Lost</p>
+		<h1 class="nf-title serif">这一页不在手帐里</h1>
+		<p class="nf-text">地址可能写错了，或者文章已经移走。回到目录，或者按 <kbd>/</kbd> 搜索。</p>
+		<div class="nf-actions">
+			<a href="/" class="nf-btn primary">回到目录</a>
+			<button type="button" class="nf-btn" data-open-search>搜索</button>
+		</div>
+	</section>
+</Base>
+
+<style>
+	.nf {
+		max-width: var(--content-max);
+		padding-top: var(--s7);
+	}
+	.nf-mark {
+		width: 96px;
+		height: 96px;
+		display: grid;
+		place-items: center;
+		border-radius: 24px;
+		background: var(--c-container);
+		margin-bottom: var(--s5);
+	}
+	.nf-diamond {
+		width: 18px;
+		height: 18px;
+		background: var(--c-gold);
+		transform: rotate(45deg);
+	}
+	.nf-title {
+		margin-top: var(--s2);
+		font-size: var(--fs-h1);
+		line-height: var(--lh-h1);
+		color: var(--c-strong);
+	}
+	.nf-text {
+		margin-top: var(--s3);
+		color: var(--c-secondary);
+	}
+	kbd {
+		font-family: var(--font-mono);
+		font-size: 14px;
+		padding: 1px 7px;
+		border-radius: 6px;
+		border: 1px solid var(--c-hairline);
+	}
+	.nf-actions {
+		display: flex;
+		gap: var(--s2);
+		margin-top: var(--s5);
+	}
+	.nf-btn {
+		height: 44px;
+		display: inline-flex;
+		align-items: center;
+		padding: 0 var(--s4);
+		border-radius: var(--r-btn);
+		background: var(--c-container);
+		color: var(--c-on-container);
+		font-size: var(--fs-small);
+	}
+	.nf-btn.primary {
+		background: var(--c-accent);
+		color: var(--c-on-accent);
+	}
+</style>

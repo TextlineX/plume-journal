@@ -1,0 +1,163 @@
+---
+// 目录条目：编号 + 标题 + 元信息 + 摘要。不用卡片：条目之间只有一条发丝线，
+// 层级靠字号和字体（编号拉丁衬线、标题宋体、摘要黑体）区分（NN/g 视觉层级、Gestalt 接近原则）。
+import { Image } from "astro:assets";
+import { render } from "astro:content";
+import { categoryUrl, fmtDate, pad, type Post, postUrl } from "../lib/posts";
+
+interface Props {
+	post: Post;
+	featured?: boolean;
+}
+const { post, featured = false } = Astro.props;
+const { data } = post;
+const { remarkPluginFrontmatter: fm } = await render(post);
+---
+<article class:list={["entry", { featured }]}>
+	<div class="entry-no latin" aria-hidden="true">{pad(post.no)}</div>
+	<div class="entry-body">
+		<p class="entry-meta caption">
+			<time datetime={data.published.toISOString()}>{fmtDate(data.published)}</time>
+			{data.category && (
+				<>
+					<span class="dot" aria-hidden="true"></span>
+					<a href={categoryUrl(data.category)} class="entry-cat">{data.category}</a>
+				</>
+			)}
+			<span class="dot" aria-hidden="true"></span>
+			<span>{fm.minutes} 分钟</span>
+		</p>
+		<h2 class="entry-title serif">
+			<a href={postUrl(post)} class="entry-link">{data.title}</a>
+		</h2>
+		{data.description && <p class="entry-desc">{data.description}</p>}
+	</div>
+	{data.image && (
+		<div class="entry-cover">
+			<Image src={data.image} alt="" widths={[240, 480]} sizes="240px" loading="lazy" />
+		</div>
+	)}
+</article>
+
+<style>
+	.entry {
+		position: relative;
+		display: grid;
+		grid-template-columns: 72px minmax(0, 1fr) auto;
+		gap: 0 var(--s4);
+		padding: var(--s5) 0;
+		border-top: 1px solid var(--c-border);
+	}
+	.entry-no {
+		font-size: var(--fs-h1);
+		line-height: 1;
+		color: var(--c-accent);
+		font-variant-numeric: lining-nums;
+		padding-top: 4px;
+		transition: color var(--dur-short4) var(--ease-standard);
+	}
+	.entry-meta {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: var(--s2);
+	}
+	.dot {
+		width: 4px;
+		height: 4px;
+		background: var(--c-gold);
+		transform: rotate(45deg);
+	}
+	.entry-cat {
+		color: var(--c-gold-strong);
+		position: relative;
+		z-index: 1;
+	}
+	.entry-cat:hover {
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+	.entry-title {
+		margin-top: var(--s2);
+		font-size: var(--fs-h2);
+		line-height: var(--lh-h2);
+		color: var(--c-strong);
+		letter-spacing: 0.02em;
+	}
+	/* 整条可点：链接的伪元素铺满条目（分类链接在其上方 z-index 1） */
+	.entry-link::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+	}
+	.entry-link {
+		background-image: linear-gradient(var(--c-gold), var(--c-gold));
+		background-size: 0 1px;
+		background-repeat: no-repeat;
+		background-position: 0 100%;
+		transition: background-size var(--dur-medium2) var(--ease-standard), color var(--dur-short4) var(--ease-standard);
+	}
+	.entry:hover .entry-link {
+		background-size: 100% 1px;
+		color: var(--c-link);
+	}
+	.entry:hover .entry-no {
+		color: var(--c-gold-strong);
+	}
+	.entry-desc {
+		margin-top: var(--s2);
+		color: var(--c-secondary);
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+	.entry-cover {
+		width: 160px;
+		align-self: center;
+	}
+	.entry-cover :global(img) {
+		width: 160px;
+		height: 120px;
+		object-fit: cover;
+		border-radius: var(--r-btn);
+	}
+
+	/* 最新一篇：标题放大一级 */
+	.featured .entry-title {
+		font-size: var(--fs-h1);
+		line-height: var(--lh-h1);
+		letter-spacing: 0.04em;
+	}
+	.featured .entry-no {
+		font-size: var(--fs-display);
+	}
+	.featured .entry-desc {
+		-webkit-line-clamp: 3;
+	}
+
+	@media (max-width: 767px) {
+		.entry {
+			grid-template-columns: 48px minmax(0, 1fr);
+			gap: 0 var(--s3);
+		}
+		.entry-no,
+		.featured .entry-no {
+			font-size: var(--fs-h2);
+		}
+		.featured .entry-title {
+			font-size: var(--fs-h2);
+			line-height: var(--lh-h2);
+		}
+		.entry-cover {
+			grid-column: 2;
+			width: 100%;
+			margin-top: var(--s3);
+		}
+		.entry-cover :global(img) {
+			width: 100%;
+			height: auto;
+			aspect-ratio: 16 / 9;
+		}
+	}
+</style>

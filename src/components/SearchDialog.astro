@@ -1,0 +1,107 @@
+---
+// 全站搜索：构建时由 Pagefind 生成索引（pnpm build），开发模式下没有索引会给出提示。
+// 快捷键：/ 打开，Esc 关闭。
+import Icon from "./Icon.astro";
+---
+<dialog class="search" id="search-dialog" aria-label="搜索">
+	<div class="sd-field">
+		<Icon name="search" />
+		<input type="search" id="search-input" placeholder="搜索文章标题和正文" autocomplete="off" aria-label="搜索关键词" />
+		<button type="button" class="icon-btn" data-close-dialog aria-label="关闭搜索"><Icon name="close" /></button>
+	</div>
+	<ol class="sd-results" id="search-results" aria-live="polite"></ol>
+	<p class="sd-hint caption" id="search-hint">输入关键词开始搜索</p>
+</dialog>
+
+<style>
+	.search {
+		width: min(640px, calc(100vw - 32px));
+		max-height: min(640px, calc(100vh - 96px));
+		margin: 12vh auto auto;
+		padding: 0;
+		border: 0;
+		border-radius: var(--r-card);
+		background: var(--c-surface);
+		color: var(--c-body);
+		box-shadow: var(--e-pop);
+		overflow: hidden;
+	}
+	.search[open] {
+		display: flex;
+		flex-direction: column;
+		animation: sd-in var(--dur-medium2) var(--ease-emph-dec);
+	}
+	.search::backdrop {
+		background: var(--scrim);
+	}
+	@keyframes sd-in {
+		from {
+			opacity: 0;
+			transform: translateY(8px);
+		}
+	}
+	.sd-field {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 0 var(--s2) 0 var(--s4);
+		height: 64px;
+		border-bottom: 1px solid var(--c-border);
+		color: var(--c-muted);
+	}
+	.sd-field input {
+		flex: 1;
+		height: 44px;
+		border: 0;
+		outline: 0;
+		background: none;
+		font: inherit;
+		color: var(--c-strong);
+	}
+	/* 去掉浏览器自带的清空按钮，避免和关闭按钮重复 */
+	.sd-field input::-webkit-search-cancel-button {
+		display: none;
+	}
+	.sd-field input::placeholder {
+		color: var(--c-muted);
+	}
+	.sd-results {
+		list-style: none;
+		margin: 0;
+		padding: var(--s2);
+		overflow-y: auto;
+	}
+	.sd-results:empty {
+		display: none;
+	}
+	.sd-results :global(a) {
+		display: block;
+		padding: 12px var(--s3);
+		border-radius: var(--r-btn);
+	}
+	.sd-results :global(a:hover),
+	.sd-results :global(a:focus-visible) {
+		background: var(--c-container);
+	}
+	.sd-results :global(.sr-title) {
+		font-family: var(--font-serif);
+		font-weight: 700;
+		color: var(--c-strong);
+	}
+	.sd-results :global(.sr-excerpt) {
+		font-size: var(--fs-small);
+		line-height: var(--lh-small);
+		color: var(--c-secondary);
+	}
+	.sd-results :global(mark) {
+		background: none;
+		color: var(--c-link);
+		font-weight: 500;
+		text-decoration: underline;
+		text-decoration-color: var(--c-gold);
+		text-underline-offset: 3px;
+	}
+	.sd-hint {
+		padding: var(--s3) var(--s4);
+	}
+</style>

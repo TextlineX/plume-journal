@@ -1,0 +1,23 @@
+---
+import ArchiveList from "../../components/ArchiveList.astro";
+import TermCloud from "../../components/TermCloud.astro";
+import Base from "../../layouts/Base.astro";
+import { getPosts, type Post } from "../../lib/posts";
+
+export async function getStaticPaths() {
+	const posts = await getPosts();
+	const tags = [...new Set(posts.flatMap((p) => p.data.tags))];
+	return tags.map((tag) => ({ params: { tag }, props: { tag, all: posts } }));
+}
+const { tag, all } = Astro.props as { tag: string; all: Post[] };
+const list = all.filter((p) => p.data.tags.includes(tag));
+---
+<Base title={`标签：${tag}`} description={`标签「${tag}」下的文章`}>
+	<header class="page-head">
+		<span class="eyebrow">Tag</span>
+		<h1># {tag}</h1>
+		<p>这个标签下有 {list.length} 篇。</p>
+	</header>
+	<TermCloud posts={all} current={{ type: "tag", value: tag }} />
+	<ArchiveList posts={list} />
+</Base>

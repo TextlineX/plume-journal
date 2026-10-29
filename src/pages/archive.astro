@@ -1,0 +1,17 @@
+---
+import ArchiveList from "../components/ArchiveList.astro";
+import TermCloud from "../components/TermCloud.astro";
+import Base from "../layouts/Base.astro";
+import { getPosts } from "../lib/posts";
+
+const posts = await getPosts();
+---
+<Base title="归档" description="按时间排列的全部文章">
+	<header class="page-head">
+		<span class="eyebrow">Archive</span>
+		<h1>归档</h1>
+		<p>全部 {posts.length} 篇，按时间倒序。</p>
+	</header>
+	<TermCloud posts={posts} />
+	<ArchiveList posts={posts} />
+</Base>

@@ -1,0 +1,214 @@
+/* 正文排版：17/32，行长 680（40 字）；标题宋体；引用用金色左线；
+   段落之间 1 行距（W3C clreq 建议段间距不小于行距的一半）。 */
+.prose {
+	max-width: var(--measure);
+	color: var(--c-body);
+	overflow-wrap: break-word;
+}
+.prose > * + * {
+	margin-top: var(--s4);
+}
+.prose h2,
+.prose h3,
+.prose h4 {
+	font-family: var(--font-serif);
+	font-weight: 700;
+	color: var(--c-strong);
+	scroll-margin-top: var(--s7);
+}
+.prose h2 {
+	position: relative;
+	margin-top: var(--s7);
+	font-size: var(--fs-h2);
+	line-height: var(--lh-h2);
+	letter-spacing: 0.02em;
+}
+/* h2 前的金菱形：与目录、索引签同一个记号 */
+.prose h2::before {
+	content: "";
+	position: absolute;
+	left: -28px;
+	top: 14px;
+	width: 8px;
+	height: 8px;
+	background: var(--c-gold);
+	transform: rotate(45deg);
+}
+.prose h3 {
+	margin-top: var(--s6);
+	font-size: var(--fs-h3);
+	line-height: var(--lh-h3);
+}
+.prose h2 + *,
+.prose h3 + * {
+	margin-top: var(--s3);
+}
+.prose a {
+	color: var(--c-link);
+	text-decoration: underline;
+	text-decoration-color: color-mix(in srgb, var(--c-link) 40%, transparent);
+	text-underline-offset: 4px;
+	text-decoration-thickness: 1px;
+	transition: text-decoration-color var(--dur-short3) var(--ease-standard);
+}
+.prose a:hover {
+	text-decoration-color: var(--c-gold);
+}
+.prose strong {
+	font-weight: 500;
+	color: var(--c-strong);
+}
+.prose ul,
+.prose ol {
+	padding-left: 1.5em;
+}
+.prose li + li {
+	margin-top: var(--s1);
+}
+.prose ul > li::marker {
+	content: "◆  ";
+	font-size: 0.6em;
+	color: var(--c-gold);
+}
+.prose ol > li::marker {
+	font-family: var(--font-latin);
+	font-weight: 500;
+	color: var(--c-accent);
+}
+.prose blockquote {
+	margin-left: 0;
+	margin-right: 0;
+	padding: 0 0 0 var(--s4);
+	border-left: 2px solid var(--c-gold);
+	font-family: var(--font-serif);
+	font-weight: 600;
+	color: var(--c-secondary);
+}
+.prose hr {
+	border: 0;
+	height: 16px;
+	margin: var(--s6) 0;
+	background:
+		linear-gradient(45deg, transparent 45%, var(--c-gold) 45% 55%, transparent 55%) center / 8px 8px no-repeat,
+		linear-gradient(var(--c-hairline), var(--c-hairline)) center / 100% 1px no-repeat;
+}
+.prose img {
+	border-radius: var(--r-card);
+	margin: 0 auto;
+}
+.prose figure figcaption {
+	margin-top: var(--s2);
+	text-align: center;
+	font-size: var(--fs-caption);
+	line-height: var(--lh-caption);
+	color: var(--c-muted);
+}
+
+/* 行内代码 */
+.prose :not(pre) > code {
+	font-family: var(--font-mono);
+	font-size: var(--fs-small);
+	padding: 2px 6px;
+	border-radius: 6px;
+	background: var(--c-container);
+	color: var(--c-on-container);
+}
+
+/* 代码块：Shiki 双主题，CSS 变量切换 */
+.prose pre {
+	position: relative;
+	margin-left: calc(-1 * var(--s4));
+	margin-right: calc(-1 * var(--s4));
+	padding: var(--s4);
+	border-radius: var(--r-card);
+	background: var(--code-bg) !important;
+	font-family: var(--font-mono);
+	font-size: 14px;
+	line-height: 24px;
+	overflow-x: auto;
+	tab-size: 2;
+}
+.prose pre code {
+	font-family: inherit;
+}
+.prose pre span {
+	color: var(--shiki-light);
+}
+:root[data-theme="dark"] .prose pre span {
+	color: var(--shiki-dark);
+}
+.prose pre[data-language]::after {
+	content: attr(data-language);
+	position: absolute;
+	top: 8px;
+	right: 12px;
+	font-size: 12px;
+	line-height: 16px;
+	color: var(--c-muted);
+	font-family: var(--font-mono);
+	text-transform: lowercase;
+}
+.copy-btn {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	height: 28px;
+	padding: 0 10px;
+	border-radius: var(--r-sm);
+	background: var(--c-container);
+	color: var(--c-on-container);
+	font-size: 13px;
+	opacity: 0;
+	transition: opacity var(--dur-short3) var(--ease-standard);
+}
+.prose pre:hover .copy-btn,
+.copy-btn:focus-visible {
+	opacity: 1;
+}
+
+/* 表格 */
+.prose table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: var(--fs-small);
+	line-height: var(--lh-small);
+}
+.prose th,
+.prose td {
+	padding: var(--s2) 12px;
+	border-bottom: 1px solid var(--c-border);
+	text-align: left;
+}
+.prose th {
+	font-weight: 500;
+	color: var(--c-strong);
+	border-bottom-color: var(--c-hairline);
+}
+
+/* 脚注 */
+.prose .footnotes {
+	margin-top: var(--s7);
+	padding-top: var(--s4);
+	border-top: 1px solid var(--c-border);
+	font-size: var(--fs-small);
+	line-height: var(--lh-small);
+	color: var(--c-secondary);
+}
+.prose .footnotes h2 {
+	font-size: var(--fs-small);
+	margin-top: 0;
+}
+.prose .footnotes h2::before {
+	display: none;
+}
+
+@media (max-width: 767px) {
+	.prose h2::before {
+		display: none;
+	}
+	.prose pre {
+		margin-left: calc(-1 * var(--s3));
+		margin-right: calc(-1 * var(--s3));
+		border-radius: 0;
+	}
+}

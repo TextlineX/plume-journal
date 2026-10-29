@@ -1,0 +1,159 @@
+---
+// 首页 = 手帐的扉页 + 目录。第 1 页有刊头；之后的页只有目录标题。
+import type { GetStaticPaths, Page } from "astro";
+import Icon from "../components/Icon.astro";
+import Pagination from "../components/Pagination.astro";
+import Portrait from "../components/Portrait.astro";
+import PostEntry from "../components/PostEntry.astro";
+import Base from "../layouts/Base.astro";
+import { getPosts, type Post, pad } from "../lib/posts";
+import { profile, site } from "../site.config";
+
+export const getStaticPaths = (async ({ paginate }) => {
+	const posts = await getPosts();
+	return paginate(posts, { pageSize: site.postsPerPage });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props as { page: Page<Post> };
+const first = page.currentPage === 1;
+const latest = page.data[0];
+const issueDate = latest ? `${latest.data.published.getUTCFullYear()}.${pad(latest.data.published.getUTCMonth() + 1)}` : "";
+---
+<Base title={first ? undefined : `目录 · 第 ${page.currentPage} 页`}>
+	{first && (
+		<>
+			<div class="cover-wrap">
+				<Portrait variant="cover" />
+			</div>
+			<header class="masthead">
+				<p class="mh-line">
+					<span class="eyebrow">{site.eyebrow}</span>
+					<span class="caption mh-issue">No. {pad(page.total)} <span aria-hidden="true">·</span> {issueDate}</span>
+				</p>
+				<h1 class="mh-title serif">{site.subtitle}</h1>
+				<p class="mh-intro">{site.intro}</p>
+				<ul class="mh-links">
+					{profile.links.map((l) => (
+						<li>
+							<a href={l.url} target={l.url.startsWith("http") ? "_blank" : undefined} rel={l.url.startsWith("http") ? "me noopener" : undefined}>
+								<Icon name={l.icon} size={18} />{l.name}
+							</a>
+						</li>
+					))}
+				</ul>
+			</header>
+		</>
+	)}
+
+	<section class="contents" aria-labelledby="contents-title">
+		<div class="ct-head">
+			<h2 id="contents-title" class="ct-title serif">目录</h2>
+			<span class="ct-latin latin">Contents</span>
+			<span class="ct-count caption">共 {page.total} 篇{!first && ` · 第 ${page.currentPage} / ${page.lastPage} 页`}</span>
+		</div>
+		<div class="ct-list">
+			{page.data.map((post, i) => <PostEntry post={post} featured={first && i === 0} />)}
+		</div>
+		<Pagination page={page} />
+	</section>
+</Base>
+
+<style>
+	.cover-wrap {
+		display: none;
+	}
+	.masthead {
+		max-width: var(--content-max);
+		padding-bottom: var(--s7);
+	}
+	.mh-line {
+		display: flex;
+		align-items: baseline;
+		gap: var(--s3);
+	}
+	.mh-issue {
+		font-variant-numeric: lining-nums;
+		letter-spacing: 0.06em;
+	}
+	.mh-title {
+		margin-top: var(--s2);
+		font-size: var(--fs-display);
+		line-height: var(--lh-display);
+		color: var(--c-strong);
+		letter-spacing: 0.08em;
+	}
+	.mh-intro {
+		margin-top: var(--s4);
+		max-width: 30em;
+		font-family: var(--font-serif);
+		font-weight: 600;
+		color: var(--c-secondary);
+	}
+	.mh-links {
+		list-style: none;
+		padding: 0;
+		margin-top: var(--s4);
+		display: flex;
+		gap: var(--s2);
+	}
+	.mh-links a {
+		height: 36px;
+		display: inline-flex;
+		align-items: center;
+		gap: var(--s2);
+		padding: 0 14px;
+		border-radius: 999px;
+		border: 1px solid var(--c-hairline);
+		font-size: var(--fs-small);
+		color: var(--c-secondary);
+		transition: background-color var(--dur-short3) var(--ease-standard), color var(--dur-short3) var(--ease-standard);
+	}
+	.mh-links a:hover {
+		background: var(--c-container);
+		border-color: var(--c-container);
+		color: var(--c-on-container);
+	}
+
+	.contents {
+		max-width: var(--content-max);
+	}
+	.ct-head {
+		display: flex;
+		align-items: baseline;
+		gap: 12px;
+		padding-bottom: var(--s3);
+	}
+	.ct-title {
+		font-size: var(--fs-h3);
+		line-height: var(--lh-h3);
+		color: var(--c-strong);
+		letter-spacing: 0.3em;
+	}
+	.ct-latin {
+		font-style: italic;
+		font-size: var(--fs-h3);
+		line-height: var(--lh-h3);
+		color: var(--c-accent);
+	}
+	.ct-count {
+		margin-left: auto;
+	}
+	.ct-list {
+		border-bottom: 1px solid var(--c-border);
+	}
+
+	@media (max-width: 1023px) {
+		.cover-wrap {
+			display: block;
+			margin: calc(-1 * var(--s6)) calc(-1 * var(--s5)) var(--s5);
+		}
+	}
+	@media (max-width: 767px) {
+		.cover-wrap {
+			margin: calc(-1 * var(--s5)) calc(-1 * var(--s3)) var(--s4);
+		}
+		.cover-wrap :global(.portrait--cover) {
+			height: 360px;
+		}
+	}
+</style>

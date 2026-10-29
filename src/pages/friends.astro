@@ -1,0 +1,146 @@
+---
+// 友链：通讯录式条目。没有头像时用名字首字做一枚「印章」（宋体，细框圆角方块）。
+import Icon from "../components/Icon.astro";
+import { friends, myLinkCard } from "../data/friends";
+import Base from "../layouts/Base.astro";
+
+const myInfo = `名称：${myLinkCard.name}\n地址：${myLinkCard.url}\n头像：${myLinkCard.avatar}\n简介：${myLinkCard.description}`;
+---
+<Base title="友链" description="朋友们的站点">
+	<header class="page-head">
+		<span class="eyebrow">Friends</span>
+		<h1>友链</h1>
+		<p>朋友们的站点。想交换友链，复制下面的信息发给我。</p>
+	</header>
+
+	<ul class="friends">
+		{friends.map((f) => (
+			<li>
+				<a href={f.url} target="_blank" rel="noopener" class="friend">
+					{f.avatar ? <img src={f.avatar} alt="" class="seal" loading="lazy" /> : <span class="seal serif" aria-hidden="true">{f.name.slice(0, 1)}</span>}
+					<span class="f-body">
+						<span class="f-name serif">{f.name}</span>
+						<span class="f-desc">{f.description}</span>
+					</span>
+					<Icon name="external" size={16} class="f-ext" />
+				</a>
+			</li>
+		))}
+	</ul>
+
+	<section class="mine" aria-labelledby="mine-title">
+		<h2 id="mine-title" class="mine-title serif"><span class="diamond" aria-hidden="true"></span>本站信息</h2>
+		<pre class="mine-info">{myInfo}</pre>
+		<button type="button" class="mine-copy" data-copy={myInfo}>复制</button>
+	</section>
+</Base>
+
+<script>
+	document.addEventListener("astro:page-load", () => {
+		const b = document.querySelector<HTMLButtonElement>(".mine-copy");
+		b?.addEventListener("click", async () => {
+			try {
+				await navigator.clipboard.writeText(b.dataset.copy || "");
+				b.textContent = "已复制";
+			} catch {
+				b.textContent = "复制失败，请手动选择";
+			}
+			setTimeout(() => (b.textContent = "复制"), 1600);
+		});
+	});
+</script>
+
+<style>
+	.friends {
+		list-style: none;
+		padding: 0;
+		max-width: var(--content-max);
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0 var(--s4);
+	}
+	.friend {
+		display: flex;
+		align-items: center;
+		gap: var(--s3);
+		padding: var(--s3) 0;
+		border-top: 1px solid var(--c-border);
+	}
+	.seal {
+		width: 52px;
+		height: 52px;
+		flex: none;
+		display: grid;
+		place-items: center;
+		border-radius: var(--r-btn);
+		border: 1px solid var(--c-gold);
+		color: var(--c-gold-strong);
+		font-size: var(--fs-h3);
+		object-fit: cover;
+	}
+	.f-body {
+		flex: 1;
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+	}
+	.f-name {
+		color: var(--c-strong);
+		transition: color var(--dur-short3) var(--ease-standard);
+	}
+	.f-desc {
+		font-size: var(--fs-small);
+		line-height: var(--lh-small);
+		color: var(--c-muted);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.friend :global(.f-ext) {
+		color: var(--c-muted);
+		flex: none;
+	}
+	.friend:hover .f-name {
+		color: var(--c-link);
+	}
+	.mine {
+		position: relative;
+		max-width: var(--content-max);
+		margin-top: var(--s7);
+		padding: var(--s4);
+		border-radius: var(--r-card);
+		background: var(--c-container);
+		color: var(--c-on-container);
+	}
+	.mine-title {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		font-size: var(--fs-body);
+		line-height: var(--lh-small);
+	}
+	.mine-info {
+		margin: var(--s3) 0 0;
+		font-family: var(--font-mono);
+		font-size: var(--fs-small);
+		line-height: var(--lh-small);
+		white-space: pre-wrap;
+		word-break: break-all;
+	}
+	.mine-copy {
+		position: absolute;
+		top: var(--s3);
+		right: var(--s3);
+		height: 36px;
+		padding: 0 14px;
+		border-radius: var(--r-btn);
+		background: var(--c-accent);
+		color: var(--c-on-accent);
+		font-size: var(--fs-small);
+	}
+	@media (max-width: 767px) {
+		.friends {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

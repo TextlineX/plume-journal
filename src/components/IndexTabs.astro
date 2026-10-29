@@ -1,0 +1,149 @@
+---
+// 竖排索引签：像手帐侧边的分隔页签。站名竖排在最上，页签在中间，工具按钮在底部。
+// 竖排遵循 W3C clreq 直排规则：writing-mode: vertical-rl，汉字正立，拉丁字母不出现在页签里。
+import { nav, site } from "../site.config";
+import Icon from "./Icon.astro";
+
+const path = Astro.url.pathname;
+const isActive = (url: string) => (url === "/" ? path === "/" || /^\/(page|posts)\//.test(path) : path.startsWith(url));
+---
+<nav class="tabs" aria-label="主导航">
+	<a href="/" class="tabs-title serif" aria-label={`${site.title}，回到首页`}>
+		<span class="diamond" aria-hidden="true"></span>
+		<span class="tabs-title-text">{site.title}</span>
+	</a>
+
+	<ul class="tabs-list">
+		{nav.map((item) => (
+			<li>
+				<a href={item.url} class:list={["tab", { active: isActive(item.url) }]} aria-current={isActive(item.url) ? "page" : undefined}>
+					<span class="tab-mark" aria-hidden="true"></span>
+					<span class="tab-text">{item.name}</span>
+				</a>
+			</li>
+		))}
+	</ul>
+
+	<div class="tabs-tools">
+		<button type="button" class="icon-btn" data-open-search aria-label="搜索（快捷键 /）"><Icon name="search" /></button>
+		<button type="button" class="icon-btn" data-open-music aria-label="音乐"><Icon name="music" /></button>
+		<button type="button" class="icon-btn" data-theme-toggle aria-label="切换深浅模式">
+			<Icon name="sun" class="ic-sun" />
+			<Icon name="moon" class="ic-moon" />
+		</button>
+	</div>
+</nav>
+
+<style>
+	.tabs {
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		padding: var(--s5) 0 var(--s4);
+		gap: var(--s5);
+	}
+	.tabs-title {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--s3);
+		color: var(--c-strong);
+	}
+	.tabs-title-text {
+		writing-mode: vertical-rl;
+		font-size: var(--fs-h3);
+		line-height: 1;
+		letter-spacing: 0.32em;
+	}
+	.tabs-list {
+		list-style: none;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: var(--s1);
+		flex: 1;
+		min-height: 0;
+	}
+	.tab {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--s2);
+		width: 44px;
+		padding: var(--s3) 0;
+		border-radius: var(--r-btn);
+		color: var(--c-secondary);
+		transition: color var(--dur-short3) var(--ease-standard), background-color var(--dur-short3) var(--ease-standard);
+	}
+	.tab-text {
+		writing-mode: vertical-rl;
+		font-family: var(--font-serif);
+		font-weight: 600;
+		font-size: var(--fs-small);
+		line-height: 1;
+		letter-spacing: 0.3em;
+	}
+	/* 记号：未选中时是一个空心小菱形，选中时变成实心金菱形 */
+	.tab-mark {
+		width: 6px;
+		height: 6px;
+		transform: rotate(45deg);
+		border: 1px solid var(--c-hairline);
+		transition: background-color var(--dur-short3) var(--ease-standard), border-color var(--dur-short3) var(--ease-standard);
+	}
+	.tab:hover {
+		color: var(--c-link);
+		background: var(--c-container);
+	}
+	.tab:hover .tab-mark {
+		border-color: var(--c-gold);
+	}
+	.tab.active {
+		color: var(--c-on-container);
+		background: var(--c-container);
+	}
+	.tab.active .tab-mark {
+		background: var(--c-gold);
+		border-color: var(--c-gold);
+	}
+	.tabs-tools {
+		display: flex;
+		flex-direction: column;
+		gap: var(--s1);
+	}
+	:global([data-theme="dark"]) .tabs-tools :global(.ic-sun),
+	:global(:root:not([data-theme="dark"])) .tabs-tools :global(.ic-moon) {
+		display: none;
+	}
+	/* 矮屏：收紧间距；仍放不下时这一条单独滚动（6 个页签 + 3 个按钮约需 800 高） */
+	.tabs {
+		overflow-y: auto;
+		scrollbar-width: none;
+	}
+	@media (max-height: 860px) {
+		.tabs {
+			gap: var(--s3);
+			padding: var(--s4) 0 var(--s3);
+		}
+		.tab {
+			padding: 10px 0;
+			gap: 6px;
+		}
+		.tabs-title-text {
+			font-size: var(--fs-body);
+		}
+		.tabs-tools {
+			gap: 0;
+		}
+	}
+	@media (max-height: 740px) {
+		.tabs-title .diamond {
+			display: none;
+		}
+		.tab-mark {
+			display: none;
+		}
+	}
+</style>

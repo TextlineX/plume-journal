@@ -1,0 +1,102 @@
+{
+ "version": 1,
+ "name": "测试",
+ "canvas": {
+  "width": 800,
+  "height": 1200
+ },
+ "pivots": {
+  "neck": [
+   400,
+   560
+  ],
+  "waist": [
+   400,
+   1150
+  ]
+ },
+ "layers": [
+  {
+   "id": "hair_back",
+   "src": "hair_back.webp",
+   "part": "head",
+   "sway": 1
+  },
+  {
+   "id": "body",
+   "src": "body.webp",
+   "part": "body"
+  },
+  {
+   "id": "head",
+   "src": "head.webp",
+   "part": "head"
+  },
+  {
+   "id": "eyes_open",
+   "src": "eyes_open.webp",
+   "part": "face",
+   "slot": "eyes",
+   "value": "open"
+  },
+  {
+   "id": "eyes_closed",
+   "src": "eyes_closed.webp",
+   "part": "face",
+   "slot": "eyes",
+   "value": "closed"
+  },
+  {
+   "id": "eyes_smile",
+   "src": "eyes_smile.webp",
+   "part": "face",
+   "slot": "eyes",
+   "value": "smile"
+  },
+  {
+   "id": "mouth_closed",
+   "src": "mouth_closed.webp",
+   "part": "face",
+   "slot": "mouth",
+   "value": "closed"
+  },
+  {
+   "id": "mouth_open",
+   "src": "mouth_open.webp",
+   "part": "face",
+   "slot": "mouth",
+   "value": "open"
+  },
+  {
+   "id": "mouth_smile",
+   "src": "mouth_smile.webp",
+   "part": "face",
+   "slot": "mouth",
+   "value": "smile"
+  },
+  {
+   "id": "hair_front",
+   "src": "hair_front.webp",
+   "part": "head",
+   "sway": 0.6
+  }
+ ],
+ "expressions": {
+  "default": {
+   "eyes": "open",
+   "mouth": "closed"
+  },
+  "happy": {
+   "eyes": "smile",
+   "mouth": "smile"
+  },
+  "talk": {
+   "eyes": "open",
+   "mouth": "open"
+  },
+  "sleepy": {
+   "eyes": "closed",
+   "mouth": "closed"
+  }
+ }
+}

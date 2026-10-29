@@ -1,0 +1,194 @@
+---
+// 窄屏（< 1024）顶栏：角色栏和竖排页签收起后的替代。
+// 768–1023 页签横排在顶栏里；< 768 收进菜单。不用玻璃材质，实色底 + 发丝线。
+import { nav, site } from "../site.config";
+import Icon from "./Icon.astro";
+
+const path = Astro.url.pathname;
+const isActive = (url: string) => (url === "/" ? path === "/" || /^\/(page|posts)\//.test(path) : path.startsWith(url));
+---
+<header class="topbar">
+	<a href="/" class="tb-title serif">
+		<span class="diamond" aria-hidden="true"></span>
+		{site.title}
+	</a>
+	<nav class="tb-nav" aria-label="主导航">
+		{nav.map((item) => (
+			<a href={item.url} class:list={["tb-link", { active: isActive(item.url) }]} aria-current={isActive(item.url) ? "page" : undefined}>{item.name}</a>
+		))}
+	</nav>
+	<div class="tb-tools">
+		<button type="button" class="icon-btn" data-open-search aria-label="搜索"><Icon name="search" /></button>
+		<button type="button" class="icon-btn" data-theme-toggle aria-label="切换深浅模式">
+			<Icon name="sun" class="ic-sun" />
+			<Icon name="moon" class="ic-moon" />
+		</button>
+		<button type="button" class="icon-btn tb-menu" data-open-menu aria-label="打开菜单" aria-haspopup="dialog"><Icon name="menu" /></button>
+	</div>
+</header>
+
+<dialog class="menu-sheet" id="menu-sheet" aria-label="菜单">
+	<div class="ms-head">
+		<span class="serif">{site.title}</span>
+		<button type="button" class="icon-btn" data-close-dialog aria-label="关闭菜单"><Icon name="close" /></button>
+	</div>
+	<ul class="ms-list">
+		{nav.map((item) => (
+			<li>
+				<a href={item.url} class:list={["ms-link", { active: isActive(item.url) }]}>
+					<span class="ms-mark" aria-hidden="true"></span>{item.name}
+				</a>
+			</li>
+		))}
+	</ul>
+	<button type="button" class="ms-music" data-open-music><Icon name="music" size={18} />音乐</button>
+</dialog>
+
+<style>
+	.topbar {
+		position: sticky;
+		top: 0;
+		z-index: 30;
+		height: 64px;
+		display: flex;
+		align-items: center;
+		gap: var(--s4);
+		padding: 0 var(--s4);
+		background: var(--c-page);
+		border-bottom: 1px solid var(--c-border);
+	}
+	.tb-title {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		font-size: var(--fs-h3);
+		line-height: var(--lh-h3);
+		color: var(--c-strong);
+		letter-spacing: 0.08em;
+	}
+	.tb-nav {
+		display: flex;
+		gap: var(--s1);
+		margin-left: auto;
+	}
+	.tb-link {
+		height: 44px;
+		display: inline-flex;
+		align-items: center;
+		padding: 0 12px;
+		border-radius: var(--r-btn);
+		font-family: var(--font-serif);
+		font-weight: 600;
+		font-size: var(--fs-small);
+		color: var(--c-secondary);
+	}
+	.tb-link:hover {
+		background: var(--c-container);
+		color: var(--c-link);
+	}
+	.tb-link.active {
+		background: var(--c-container);
+		color: var(--c-on-container);
+	}
+	.tb-tools {
+		display: flex;
+		gap: var(--s1);
+	}
+	.tb-menu {
+		display: none;
+	}
+	:global([data-theme="dark"]) .tb-tools :global(.ic-sun),
+	:global(:root:not([data-theme="dark"])) .tb-tools :global(.ic-moon) {
+		display: none;
+	}
+	@media (max-width: 767px) {
+		.topbar {
+			padding: 0 var(--s3);
+			gap: var(--s2);
+		}
+		.tb-nav {
+			display: none;
+		}
+		.tb-tools {
+			margin-left: auto;
+		}
+		.tb-menu {
+			display: inline-grid;
+		}
+	}
+
+	/* ---- 菜单抽屉 ---- */
+	.menu-sheet {
+		margin: 0 0 0 auto;
+		height: 100%;
+		max-height: none;
+		width: min(320px, 86vw);
+		padding: var(--s3) var(--s4);
+		border: 0;
+		background: var(--c-surface);
+		color: var(--c-body);
+		box-shadow: var(--e-pop);
+	}
+	.menu-sheet::backdrop {
+		background: var(--scrim);
+	}
+	.menu-sheet[open] {
+		animation: sheet-in var(--dur-medium2) var(--ease-emph-dec);
+	}
+	@keyframes sheet-in {
+		from {
+			transform: translateX(24px);
+			opacity: 0;
+		}
+	}
+	.ms-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		height: 48px;
+		margin-bottom: var(--s3);
+		font-size: var(--fs-h3);
+		color: var(--c-strong);
+	}
+	.ms-list {
+		list-style: none;
+		padding: 0;
+	}
+	.ms-link {
+		display: flex;
+		align-items: center;
+		gap: var(--s3);
+		height: 52px;
+		padding: 0 var(--s3);
+		border-radius: var(--r-btn);
+		font-family: var(--font-serif);
+		font-weight: 600;
+		color: var(--c-secondary);
+	}
+	.ms-link.active {
+		background: var(--c-container);
+		color: var(--c-on-container);
+	}
+	.ms-mark {
+		width: 6px;
+		height: 6px;
+		transform: rotate(45deg);
+		border: 1px solid var(--c-hairline);
+	}
+	.ms-link.active .ms-mark {
+		background: var(--c-gold);
+		border-color: var(--c-gold);
+	}
+	.ms-music {
+		margin-top: var(--s4);
+		display: flex;
+		align-items: center;
+		gap: var(--s2);
+		height: 44px;
+		padding: 0 var(--s3);
+		border-radius: var(--r-btn);
+		background: var(--c-container);
+		color: var(--c-on-container);
+		font-size: var(--fs-small);
+	}
+</style>

@@ -1,0 +1,122 @@
+---
+// 归档列表：按年分组。每行「日期 · 标题 ………… 分类」，标题和分类之间用引导点连接，
+// 是书籍目录的排法（Bringhurst《The Elements of Typographic Style》4.4 节）。
+import { categoryUrl, fmtDate, pad, type Post, postUrl } from "../lib/posts";
+
+interface Props {
+	posts: Post[];
+}
+const { posts } = Astro.props;
+const years = new Map<number, Post[]>();
+for (const p of posts) {
+	const y = p.data.published.getUTCFullYear();
+	if (!years.has(y)) years.set(y, []);
+	years.get(y)!.push(p);
+}
+---
+<div class="archive">
+	{[...years.entries()].map(([year, list]) => (
+		<section class="year" aria-labelledby={`y-${year}`}>
+			<h2 class="year-title latin" id={`y-${year}`}>
+				{year}<span class="year-count caption">{list.length} 篇</span>
+			</h2>
+			<ol class="rows">
+				{list.map((p) => (
+					<li class="row">
+						<time class="row-date caption" datetime={p.data.published.toISOString()}>{fmtDate(p.data.published, "md")}</time>
+						<a href={postUrl(p)} class="row-title">
+							<span class="row-no latin" aria-hidden="true">{pad(p.no)}</span>
+							{p.data.title}
+						</a>
+						<span class="row-leader" aria-hidden="true"></span>
+						{p.data.category ? <a href={categoryUrl(p.data.category)} class="row-cat caption">{p.data.category}</a> : <span class="row-cat caption">未分类</span>}
+					</li>
+				))}
+			</ol>
+		</section>
+	))}
+</div>
+
+<style>
+	.archive {
+		max-width: var(--content-max);
+	}
+	.year + .year {
+		margin-top: var(--s6);
+	}
+	.year-title {
+		display: flex;
+		align-items: baseline;
+		gap: var(--s3);
+		padding-bottom: var(--s2);
+		border-bottom: 1px solid var(--c-border);
+		font-size: var(--fs-h1);
+		line-height: var(--lh-h1);
+		color: var(--c-accent);
+		font-variant-numeric: lining-nums;
+	}
+	.year-count {
+		font-family: var(--font-sans);
+	}
+	.rows {
+		list-style: none;
+		padding: 0;
+	}
+	.row {
+		display: flex;
+		align-items: baseline;
+		gap: var(--s3);
+		padding: 12px 0;
+	}
+	.row-date {
+		width: 40px;
+		flex: none;
+		font-variant-numeric: tabular-nums;
+	}
+	.row-title {
+		min-width: 0;
+		font-family: var(--font-serif);
+		font-weight: 600;
+		color: var(--c-strong);
+		transition: color var(--dur-short3) var(--ease-standard);
+	}
+	.row-no {
+		margin-right: 12px;
+		font-size: var(--fs-small);
+		color: var(--c-accent);
+	}
+	.row-title:hover {
+		color: var(--c-link);
+	}
+	.row-leader {
+		flex: 1;
+		min-width: var(--s5);
+		height: 1px;
+		align-self: center;
+		margin-top: 6px;
+		background: radial-gradient(circle, var(--c-hairline) 1px, transparent 1.5px) left center / 8px 2px repeat-x;
+	}
+	.row-cat {
+		flex: none;
+		color: var(--c-gold-strong);
+	}
+	a.row-cat:hover {
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+	@media (max-width: 767px) {
+		.row {
+			flex-wrap: wrap;
+			gap: 4px var(--s3);
+		}
+		.row-title {
+			flex: 1 1 calc(100% - 56px);
+		}
+		.row-leader {
+			display: none;
+		}
+		.row-cat {
+			margin-left: 56px;
+		}
+	}
+</style>

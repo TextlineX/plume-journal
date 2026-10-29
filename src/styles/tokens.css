@@ -1,0 +1,100 @@
+/* ============================================================
+   羽之手帐 · 设计 token
+   色值、字号、动效沿用 v2「珍珠人偶」已验收的规范（对比度见注释）；
+   版式 token（角色栏、索引签、版心）是本版新增。
+   ============================================================ */
+
+:root {
+	color-scheme: light;
+
+	/* ---- 浅色「珍珠」 ---- */
+	--c-page: #f6f2f8;
+	--c-surface: #ffffff;
+	--c-container: #eeeaf6;
+	--c-strong: #2e2b36; /* 12.52:1 on page */
+	--c-body: #3a3644; /* 10.59:1 on page */
+	--c-secondary: #5a5466; /* 6.55:1 on page */
+	--c-muted: #6b6574; /* 5.08:1 on page, 4.74:1 on container */
+	--c-accent: #6e6699; /* 4.72:1 on page，白字压在上面 5.22:1；用于大号数字、拉丁眉题 */
+	--c-on-accent: #ffffff;
+	--c-link: #5e5689; /* 5.99:1 on page */
+	--c-on-container: #4a4277; /* 7.59:1 on container */
+	--c-gold: #c9a65a; /* 装饰线与菱形，WCAG 1.4.11 装饰豁免 */
+	--c-gold-strong: #836526; /* 文字用金：4.92:1 on page，4.60:1 on container */
+	--c-border: #e2ddee;
+	--c-hairline: #d8d1e6;
+
+	/* 角色栏 */
+	--portrait-bg: linear-gradient(180deg, #ece5f3 0%, #f3edf6 46%, #ebe4f2 100%);
+	--portrait-shadow: drop-shadow(0 2px 8px rgb(110 102 153 / 0.22));
+
+	--code-bg: #f0ecf6;
+	--scrim: rgb(23 21 42 / 0.45);
+	--e-pop: 0 24px 48px rgb(46 43 54 / 0.18), 0 0 0 1px var(--c-border);
+
+	/* ---- 字体 ---- */
+	--font-sans: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+	--font-serif: "Noto Serif SC", "Songti SC", "SimSun", serif;
+	--font-latin: "Cormorant Garamond", "Noto Serif SC", serif;
+	--font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+	/* ---- 字号阶梯：17 × 1.25（每级配 4pt 基线的行高） ---- */
+	--fs-display: 52px; --lh-display: 64px;
+	--fs-h1: 42px; --lh-h1: 56px;
+	--fs-h2: 26px; --lh-h2: 36px;
+	--fs-h3: 21px; --lh-h3: 32px;
+	--fs-body: 17px; --lh-body: 32px;
+	--fs-small: 14px; --lh-small: 24px;
+	--fs-caption: 13px; --lh-caption: 20px;
+
+	/* ---- 间距（8 点软栅格） ---- */
+	--s1: 4px; --s2: 8px; --s3: 16px; --s4: 24px; --s5: 32px; --s6: 48px; --s7: 64px; --s8: 96px;
+
+	/* ---- 版式 ---- */
+	--portrait-w: clamp(260px, 27vw, 400px); /* 角色栏 */
+	--tabs-w: 72px; /* 竖排索引签 */
+	--measure: 680px; /* 正文行长：40 字 × 17px（W3C clreq 横排 ≤ 48 字） */
+	--content-max: 760px;
+	--aside-w: 224px;
+
+	/* ---- 圆角 ---- */
+	--r-sm: 8px; --r-btn: 12px; --r-card: 16px;
+
+	/* ---- 动效（Material 3） ---- */
+	--ease-standard: cubic-bezier(0.2, 0, 0, 1);
+	--ease-emph-dec: cubic-bezier(0.05, 0.7, 0.1, 1);
+	--ease-emph-acc: cubic-bezier(0.3, 0, 0.8, 0.15);
+	--dur-short3: 150ms; --dur-short4: 200ms; --dur-medium2: 300ms; --dur-long2: 500ms;
+}
+
+/* 阅读页：角色栏收窄（<html data-portrait="slim">，由 Base 布局按页面设置） */
+:root[data-portrait="slim"] {
+	--portrait-w: clamp(200px, 16vw, 248px);
+}
+
+/* ---- 深色「薰衣草夜」（色相 246°–253°） ---- */
+:root[data-theme="dark"] {
+	color-scheme: dark;
+	--c-page: #17152a;
+	--c-surface: #201d36;
+	--c-container: #3a345e;
+	--c-strong: #f3f1fa; /* 15.95:1 */
+	--c-body: #e2def2; /* 13.56:1 */
+	--c-secondary: #cfc9e6; /* 11.17:1 */
+	--c-muted: #aba4cc; /* 7.57:1 on page，4.86:1 on container */
+	--c-accent: #b8afe6; /* 8.76:1 */
+	--c-on-accent: #17152a;
+	--c-link: #c4bcef; /* 10.01:1 */
+	--c-on-container: #e2def2;
+	--c-gold: #d9bc78;
+	--c-gold-strong: #d9bc78; /* 9.70:1 */
+	--c-border: #2f2b4a;
+	--c-hairline: #3a3556;
+
+	--portrait-bg: linear-gradient(180deg, #2a2645 0%, #1f1c37 55%, #17152a 100%);
+	--portrait-shadow: none;
+
+	--code-bg: #120f22;
+	--scrim: rgb(0 0 0 / 0.55);
+	--e-pop: 0 24px 48px rgb(0 0 0 / 0.45), 0 0 0 1px var(--c-hairline);
+}

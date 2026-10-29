@@ -1,0 +1,155 @@
+---
+// 项目：一张状态清单。编号 + 名称 + 状态（菱形记号：实心金 = 进行中，实心紫 = 已上线，空心 = 已归档）
+import Icon from "../components/Icon.astro";
+import { projects } from "../data/projects";
+import Base from "../layouts/Base.astro";
+import { pad } from "../lib/posts";
+---
+<Base title="项目" description="做过和正在做的东西">
+	<header class="page-head">
+		<span class="eyebrow">Works</span>
+		<h1>项目</h1>
+		<p>做过和正在做的东西。</p>
+	</header>
+	<ol class="projects">
+		{projects.map((p, i) => (
+			<li class="proj">
+				<span class="proj-no latin" aria-hidden="true">{pad(i + 1)}</span>
+				<div class="proj-body">
+					<div class="proj-head">
+						<h2 class="proj-name serif">{p.name}</h2>
+						<span class:list={["status", { live: p.status === "已上线", archived: p.status === "已归档" }]}>
+							<span class="status-mark" aria-hidden="true"></span>{p.status}
+						</span>
+					</div>
+					<p class="proj-desc">{p.description}</p>
+					<div class="proj-foot">
+						<ul class="proj-tags">{p.tags.map((t) => <li>{t}</li>)}</ul>
+						<div class="proj-links">
+							{p.url && <a href={p.url} target={p.url.startsWith("http") ? "_blank" : undefined} rel="noopener">访问<Icon name="arrow-right" size={14} /></a>}
+							{p.repo && <a href={p.repo} target="_blank" rel="noopener">仓库<Icon name="external" size={14} /></a>}
+						</div>
+					</div>
+				</div>
+			</li>
+		))}
+	</ol>
+</Base>
+
+<style>
+	.projects {
+		list-style: none;
+		padding: 0;
+		max-width: var(--content-max);
+		border-bottom: 1px solid var(--c-border);
+	}
+	.proj {
+		display: grid;
+		grid-template-columns: 72px minmax(0, 1fr);
+		gap: var(--s4);
+		padding: var(--s5) 0;
+		border-top: 1px solid var(--c-border);
+	}
+	.proj-no {
+		font-size: var(--fs-h1);
+		line-height: 1;
+		color: var(--c-accent);
+		padding-top: 2px;
+	}
+	.proj-head {
+		display: flex;
+		align-items: center;
+		gap: var(--s3);
+		flex-wrap: wrap;
+	}
+	.proj-name {
+		font-size: var(--fs-h2);
+		line-height: var(--lh-h2);
+		color: var(--c-strong);
+	}
+	.status {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		font-size: var(--fs-caption);
+		line-height: var(--lh-caption);
+		color: var(--c-gold-strong);
+	}
+	.status-mark {
+		width: 7px;
+		height: 7px;
+		transform: rotate(45deg);
+		background: var(--c-gold);
+		border: 1px solid var(--c-gold);
+	}
+	.status.live {
+		color: var(--c-link);
+	}
+	.status.live .status-mark {
+		background: var(--c-accent);
+		border-color: var(--c-accent);
+	}
+	.status.archived {
+		color: var(--c-muted);
+	}
+	.status.archived .status-mark {
+		background: none;
+		border-color: var(--c-muted);
+	}
+	.proj-desc {
+		margin-top: var(--s2);
+		color: var(--c-secondary);
+	}
+	.proj-foot {
+		margin-top: var(--s3);
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--s3);
+		flex-wrap: wrap;
+	}
+	.proj-tags {
+		list-style: none;
+		padding: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--s2);
+	}
+	.proj-tags li {
+		height: 28px;
+		display: inline-flex;
+		align-items: center;
+		padding: 0 10px;
+		border-radius: 999px;
+		border: 1px solid var(--c-hairline);
+		font-size: var(--fs-caption);
+		color: var(--c-secondary);
+	}
+	.proj-links {
+		display: flex;
+		gap: var(--s2);
+	}
+	.proj-links a {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		height: 36px;
+		padding: 0 12px;
+		border-radius: var(--r-btn);
+		background: var(--c-container);
+		color: var(--c-on-container);
+		font-size: var(--fs-small);
+	}
+	.proj-links a:hover {
+		background: color-mix(in srgb, var(--c-container), var(--c-accent) 18%);
+	}
+	@media (max-width: 767px) {
+		.proj {
+			grid-template-columns: 40px minmax(0, 1fr);
+			gap: var(--s3);
+		}
+		.proj-no {
+			font-size: var(--fs-h2);
+		}
+	}
+</style>

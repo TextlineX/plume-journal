@@ -1,0 +1,127 @@
+---
+// 音乐面板：一个小浮层。<audio> 放在换页时保留的层里（transition:persist），换页不断歌。
+import { music } from "../site.config";
+import Icon from "./Icon.astro";
+
+const first = music.playlist[0];
+---
+{music.enable && (
+	<div class="music" id="music-panel" role="dialog" aria-label="音乐" hidden data-tracks={JSON.stringify(music.playlist)} data-volume={music.volume}>
+		<div class="mu-disc" aria-hidden="true"><span class="diamond"></span></div>
+		<div class="mu-info">
+			<div class="mu-title">{first ? first.title : "还没有歌"}</div>
+			<div class="mu-artist caption">{first ? first.artist : "在 site.config.ts 的 music.playlist 里添加"}</div>
+			<div class="mu-bar" aria-hidden="true"><span></span></div>
+		</div>
+		<button type="button" class="mu-btn mu-play" aria-label="播放" disabled={!first}>
+			<Icon name="play" class="ic-play" />
+			<Icon name="pause" class="ic-pause" />
+		</button>
+		<button type="button" class="icon-btn mu-next" aria-label="下一首" disabled={music.playlist.length < 2}><Icon name="next" size={18} /></button>
+	</div>
+)}
+
+<style>
+	.music {
+		position: fixed;
+		z-index: 40;
+		left: calc(var(--portrait-w) + var(--tabs-w) + 8px);
+		bottom: var(--s4);
+		width: 360px;
+		display: flex;
+		align-items: center;
+		gap: var(--s3);
+		padding: var(--s3);
+		border-radius: var(--r-card);
+		background: var(--c-surface);
+		box-shadow: var(--e-pop);
+		animation: mu-in var(--dur-medium2) var(--ease-emph-dec);
+	}
+	.music[hidden] {
+		display: none;
+	}
+	@keyframes mu-in {
+		from {
+			opacity: 0;
+			transform: translateY(8px);
+		}
+	}
+	.mu-disc {
+		width: 48px;
+		height: 48px;
+		flex: none;
+		border-radius: 50%;
+		display: grid;
+		place-items: center;
+		background: radial-gradient(circle, var(--c-surface) 0 9px, var(--c-container) 10px);
+	}
+	.music.is-playing .mu-disc {
+		animation: spin 6s linear infinite;
+	}
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+	.mu-info {
+		flex: 1;
+		min-width: 0;
+	}
+	.mu-title {
+		font-size: var(--fs-small);
+		line-height: var(--lh-small);
+		font-weight: 500;
+		color: var(--c-strong);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.mu-artist {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.mu-bar {
+		margin-top: 6px;
+		height: 2px;
+		border-radius: 1px;
+		background: var(--c-container);
+	}
+	.mu-bar span {
+		display: block;
+		height: 100%;
+		width: 0;
+		background: var(--c-accent);
+		border-radius: inherit;
+	}
+	.mu-btn {
+		width: 44px;
+		height: 44px;
+		flex: none;
+		border-radius: 50%;
+		display: grid;
+		place-items: center;
+		background: var(--c-accent);
+		color: var(--c-on-accent);
+	}
+	.mu-btn:disabled,
+	.mu-next:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+	}
+	.ic-pause,
+	.music.is-playing .ic-play {
+		display: none;
+	}
+	.music.is-playing .ic-pause {
+		display: block;
+	}
+	@media (max-width: 1023px) {
+		.music {
+			left: var(--s3);
+			right: var(--s3);
+			width: auto;
+			bottom: var(--s3);
+		}
+	}
+</style>
