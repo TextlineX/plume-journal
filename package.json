@@ -2,6 +2,7 @@
   "name": "plume-journal",
   "type": "module",
   "version": "0.1.0",
+  "packageManager": "pnpm@12.15.0",
   "private": true,
   "scripts": {
     "dev": "astro dev",
