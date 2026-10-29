@@ -140,32 +140,39 @@ const toc = headings.filter((h) => h.depth <= 3 && h.slug !== "footnote-label");
 <script>
 	// 页边目录高亮当前章节；代码块加复制按钮
 	function setup() {
+		// 页边目录高亮 + 阅读进度：合并成一个按帧节流的滚动处理，先统一读布局、再统一写样式，避免布局抖动
 		const links = [...document.querySelectorAll<HTMLAnchorElement>("#aside-toc a")];
-		if (links.length) {
-			const heads = links.map((a) => document.getElementById(a.dataset.slug!)).filter(Boolean) as HTMLElement[];
-			const onScroll = () => {
-				let cur = heads[0]?.id;
-				for (const h of heads) if (h.getBoundingClientRect().top < 140) cur = h.id;
-				links.forEach((a) => a.classList.toggle("active", a.dataset.slug === cur));
-			};
-			onScroll();
-			window.addEventListener("scroll", onScroll, { passive: true });
-			document.addEventListener("astro:before-swap", () => window.removeEventListener("scroll", onScroll), { once: true });
-		}
-		// 阅读进度：按正文区域算，2px 金线
+		const heads = links.map((a) => document.getElementById(a.dataset.slug!)).filter(Boolean) as HTMLElement[];
 		const bar = document.getElementById("read-progress");
 		const body = document.querySelector<HTMLElement>(".post-body");
-		if (bar && body) {
-			const upd = () => {
-				const r = body.getBoundingClientRect();
-				const total = r.height - window.innerHeight * 0.6;
-				const p = Math.min(1, Math.max(0, -r.top / Math.max(1, total)));
+		let ticking = false;
+		let lastCur = "";
+		const frame = () => {
+			ticking = false;
+			// 读
+			const vh = window.innerHeight;
+			let cur = heads[0]?.id ?? "";
+			for (const h of heads) if (h.getBoundingClientRect().top < 140) cur = h.id;
+			const r = body?.getBoundingClientRect();
+			// 写
+			if (cur !== lastCur) {
+				lastCur = cur;
+				links.forEach((a) => a.classList.toggle("active", a.dataset.slug === cur));
+			}
+			if (bar && r) {
+				const p = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height - vh * 0.6)));
 				bar.style.transform = `scaleX(${p})`;
-			};
-			upd();
-			window.addEventListener("scroll", upd, { passive: true });
-			document.addEventListener("astro:before-swap", () => window.removeEventListener("scroll", upd), { once: true });
-		}
+			}
+		};
+		const onScroll = () => {
+			if (!ticking) {
+				ticking = true;
+				requestAnimationFrame(frame);
+			}
+		};
+		frame();
+		window.addEventListener("scroll", onScroll, { passive: true });
+		document.addEventListener("astro:before-swap", () => window.removeEventListener("scroll", onScroll), { once: true });
 		// 正文图片点击放大
 		const zoom = document.getElementById("img-zoom") as HTMLDialogElement | null;
 		if (zoom) {
