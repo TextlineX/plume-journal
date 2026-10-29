@@ -26,14 +26,13 @@
 
 	/* 角色栏 */
 	--portrait-bg: linear-gradient(180deg, #ece5f3 0%, #f3edf6 46%, #ebe4f2 100%);
-	--portrait-shadow: drop-shadow(0 2px 8px rgb(110 102 153 / 0.22));
 
 	--code-bg: #f0ecf6;
 	--scrim: rgb(23 21 42 / 0.45);
 	--e-pop: 0 24px 48px rgb(46 43 54 / 0.18), 0 0 0 1px var(--c-border);
 
 	/* ---- 字体 ---- */
-	--font-sans: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+	--font-sans: system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC", sans-serif;
 	--font-serif: "Noto Serif SC", "Songti SC", "SimSun", serif;
 	--font-latin: "Cormorant Garamond", "Noto Serif SC", serif;
 	--font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -92,7 +91,6 @@
 	--c-hairline: #3a3556;
 
 	--portrait-bg: linear-gradient(180deg, #2a2645 0%, #1f1c37 55%, #17152a 100%);
-	--portrait-shadow: none;
 
 	--code-bg: #120f22;
 	--scrim: rgb(0 0 0 / 0.55);

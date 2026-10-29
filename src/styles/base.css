@@ -1,7 +1,7 @@
-@import "@fontsource/noto-sans-sc/400.css";
-@import "@fontsource/noto-sans-sc/500.css";
+/* 字体加载策略：正文用系统黑体（苹方 / 微软雅黑 / 思源黑体），不下载中文网络字体；
+   标题宋体只加载 Noto Serif SC 600 一个字重，构建后再按全站实际用字裁掉不需要的分片
+   （见 src/integrations/prune-font-faces.mjs）。 */
 @import "@fontsource/noto-serif-sc/600.css";
-@import "@fontsource/noto-serif-sc/700.css";
 @import "@fontsource/cormorant-garamond/500.css";
 @import "@fontsource/cormorant-garamond/500-italic.css";
 @import "@fontsource-variable/jetbrains-mono";
@@ -68,7 +68,7 @@ figure {
 
 .serif {
 	font-family: var(--font-serif);
-	font-weight: 700;
+	font-weight: 600;
 }
 .latin {
 	font-family: var(--font-latin);
@@ -134,7 +134,7 @@ figure {
 }
 .page-head h1 {
 	font-family: var(--font-serif);
-	font-weight: 700;
+	font-weight: 600;
 	font-size: var(--fs-h1);
 	line-height: var(--lh-h1);
 	color: var(--c-strong);
@@ -173,6 +173,19 @@ figure {
 		--lh-h1: 44px;
 		--fs-display: 42px;
 		--lh-display: 56px;
+	}
+}
+
+/* ---- 换页动画关键帧（由 Base 布局里的 ClientRouter 使用） ---- */
+@keyframes vt-out {
+	to {
+		opacity: 0;
+	}
+}
+@keyframes vt-in {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
 	}
 }
 

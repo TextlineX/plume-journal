@@ -1,7 +1,10 @@
 ---
 // 页面骨架：[角色栏 | 竖排索引签 | 内容]。
-// 角色栏、搜索、音乐用 transition:persist 跨页保留：换页时只有内容区淡入淡出，角色始终在场。
-import { ClientRouter, fade } from "astro:transitions";
+// 换页：Astro ClientRouter（只替换内容区，角色栏、音乐、搜索跨页保留，音乐不断）。
+// 性能：实测浏览器原生 View Transition 的整页快照处理单帧 115–150 ms（4× 降速），
+// 所以在首屏脚本里对路由隐藏 startViewTransition，让它走 fallback="animate"——由 CSS 动画淡入内容区，
+// 不做整页快照。对照实验见 README「性能」一节。
+import { ClientRouter } from "astro:transitions";
 import "../styles/base.css";
 import Footer from "../components/Footer.astro";
 import IndexTabs from "../components/IndexTabs.astro";
@@ -22,6 +25,12 @@ interface Props {
 const { title, description = site.subtitle, ogType = "website", slim = false } = Astro.props;
 const fullTitle = title ? `${title} · ${site.title}` : `${site.title} · ${site.subtitle}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+// 内容区换页动画：旧内容 150ms 淡出（M3 强调加速），新内容 300ms 淡入并上浮 8px（M3 强调减速）
+const contentAnim = {
+	old: { name: "vt-out", duration: "150ms", easing: "cubic-bezier(0.3, 0, 0.8, 0.15)", fillMode: "both" },
+	new: { name: "vt-in", duration: "300ms", easing: "cubic-bezier(0.05, 0.7, 0.1, 1)", fillMode: "both" },
+};
+const pageAnim = { forwards: contentAnim, backwards: contentAnim };
 // Codex 交付的网站图标（交接包 03）存在时优先使用，否则用现有的占位图标
 const has = (f: string) => fs.existsSync(`public/favicon/${f}`);
 const icon = {
@@ -56,9 +65,20 @@ const icon = {
 					t = localStorage.getItem("theme") || "dark";
 				} catch (e) {}
 				document.documentElement.dataset.theme = t;
+				// 角色立绘的入场动画只在本次会话第一次打开时播放，之后换页不再重复
+				try {
+					if (sessionStorage.getItem("entered")) document.documentElement.dataset.entered = "1";
+					else sessionStorage.setItem("entered", "1");
+				} catch (e) {}
 			})();
 		</script>
-		<ClientRouter fallback="swap" />
+		<!-- 让路由走 CSS 动画模式，跳过整页快照（必须在路由脚本之前执行） -->
+		<script is:inline>
+			try {
+				Object.defineProperty(document, "startViewTransition", { value: undefined, configurable: true });
+			} catch (e) {}
+		</script>
+		<ClientRouter fallback="animate" />
 	</head>
 	<body>
 		<a class="skip" href="#main">跳到正文</a>
@@ -71,7 +91,7 @@ const icon = {
 			</div>
 			<div class="frame-main">
 				<TopBar />
-				<main id="main" class="frame-content" transition:animate={fade({ duration: "0.3s" })}>
+				<main id="main" class="frame-content" transition:animate={pageAnim}>
 					<slot />
 				</main>
 				<Footer />
@@ -116,6 +136,10 @@ const icon = {
 		top: 0;
 		height: 100vh;
 		height: 100dvh;
+	}
+	/* 角色栏独立成层：滚动和换页时不跟内容区一起重绘 */
+	.frame-portrait {
+		contain: strict;
 	}
 	.frame-main {
 		min-width: 0;

@@ -116,7 +116,7 @@ const toc = headings.filter((h) => h.depth <= 3 && h.slug !== "footnote-label");
 </Base>
 
 <script>
-	// 页边目录高亮当前章节；代码块加复制按钮。ClientRouter 换页后重新执行（astro:page-load）
+	// 页边目录高亮当前章节；代码块加复制按钮
 	function setup() {
 		const links = [...document.querySelectorAll<HTMLAnchorElement>("#aside-toc a")];
 		if (links.length) {

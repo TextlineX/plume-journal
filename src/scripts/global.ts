@@ -104,6 +104,10 @@ export function initGlobal() {
 	applyTheme(getTheme());
 	// 换页后新文档的 <html> 属性会覆盖当前值，需要重新应用
 	document.addEventListener("astro:after-swap", () => applyTheme(getTheme()));
+	// 换页前关掉打开的弹层
+	document.addEventListener("astro:before-preparation", () => {
+		document.querySelectorAll<HTMLDialogElement>("dialog[open]").forEach((d) => d.close());
+	});
 
 	document.addEventListener("click", (e) => {
 		const el = (e.target as HTMLElement).closest<HTMLElement>("[data-theme-toggle],[data-open-search],[data-open-menu],[data-close-dialog],[data-open-music],.mu-play,.mu-next");
@@ -182,10 +186,6 @@ export function initGlobal() {
 		timer = window.setTimeout(() => runSearch(t.value), 160);
 	});
 
-	// 换页前关掉打开的弹层
-	document.addEventListener("astro:before-preparation", () => {
-		document.querySelectorAll<HTMLDialogElement>("dialog[open]").forEach((d) => d.close());
-	});
 
 	const { audio } = musicEls();
 	if (audio) {
