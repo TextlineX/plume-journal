@@ -3,6 +3,7 @@
 // 宽度不够时收进正文上方的折叠面板。文末：读完啦 → 标签与许可 → 上一篇 / 下一篇。
 import { Image } from "astro:assets";
 import { render } from "astro:content";
+import Comments from "../../components/Comments.astro";
 import Icon from "../../components/Icon.astro";
 import Sticker from "../../components/Sticker.astro";
 import Base from "../../layouts/Base.astro";
@@ -23,7 +24,7 @@ const { Content, headings, remarkPluginFrontmatter: fm } = await render(post);
 const { data } = post;
 const toc = headings.filter((h) => h.depth <= 3 && h.slug !== "footnote-label");
 ---
-<Base title={data.title} description={data.description || site.subtitle} ogType="article" slim>
+<Base title={data.title} description={data.description || site.subtitle} ogType="article" slim ogImage={`/og/posts/${post.id}.png`} published={data.published} updated={data.updated}>
 	<div class="post">
 		<header class="post-head">
 			<a href="/" class="back caption"><Icon name="arrow-left" size={16} />目录</a>
@@ -97,6 +98,8 @@ const toc = headings.filter((h) => h.depth <= 3 && h.slug !== "footnote-label");
 						</a>
 					) : <span />}
 				</nav>
+
+				<Comments />
 			</article>
 
 			{toc.length > 1 && (

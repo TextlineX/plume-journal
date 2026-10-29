@@ -11,7 +11,9 @@ function getTheme(): "light" | "dark" {
 	}
 }
 function applyTheme(t: "light" | "dark") {
+	const changed = document.documentElement.dataset.theme !== t;
 	document.documentElement.dataset.theme = t;
+	if (changed) window.dispatchEvent(new CustomEvent("plume:theme", { detail: t }));
 	document.querySelector('meta[name="theme-color"]')?.setAttribute("content", t === "dark" ? "#17152a" : "#f6f2f8");
 }
 

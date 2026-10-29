@@ -1,0 +1,122 @@
+---
+// 评论区：giscus。滚动到附近才加载（IntersectionObserver，提前 400px），不拖慢正文首屏。
+// 主题跟随站点深浅模式：线上用 public/giscus/ 下的薰衣草主题；本地开发时 giscus 读不到 localhost，改用内置主题。
+import { comments as cfg, site } from "../site.config";
+
+const enabled = Boolean(cfg.repo && cfg.repoId && cfg.categoryId);
+const origin = Astro.site ? Astro.site.origin : "";
+const themes = import.meta.env.DEV
+	? { light: "light", dark: "transparent_dark" }
+	: { light: `${origin}/giscus/plume-light.css`, dark: `${origin}/giscus/plume-dark.css` };
+---
+{enabled ? (
+	<section class="comments" aria-labelledby="comments-title" data-pagefind-ignore>
+		<h2 id="comments-title" class="cm-title"><span class="latin">Comments</span>评论</h2>
+		<div
+			class="giscus-slot"
+			data-repo={cfg.repo}
+			data-repo-id={cfg.repoId}
+			data-category={cfg.category}
+			data-category-id={cfg.categoryId}
+			data-mapping={cfg.mapping}
+			data-strict={cfg.strict ? "1" : "0"}
+			data-reactions-enabled={cfg.reactions ? "1" : "0"}
+			data-input-position={cfg.inputPosition}
+			data-lang={cfg.lang}
+			data-theme-light={themes.light}
+			data-theme-dark={themes.dark}
+		>
+			<p class="cm-loading caption">评论加载中……需要能访问 GitHub。</p>
+		</div>
+	</section>
+) : (
+	import.meta.env.DEV && <p class="cm-off caption" data-pagefind-ignore>评论区未开启：在 src/site.config.ts 的 comments 里填写 giscus 配置（仅开发模式可见）。</p>
+)}
+
+<script>
+	function themeFor(slot: HTMLElement) {
+		return document.documentElement.dataset.theme === "light" ? slot.dataset.themeLight! : slot.dataset.themeDark!;
+	}
+	function mount() {
+		const slot = document.querySelector<HTMLElement>(".giscus-slot");
+		if (!slot || slot.dataset.mounted) return;
+		const load = () => {
+			if (slot.dataset.mounted) return;
+			slot.dataset.mounted = "1";
+			const s = document.createElement("script");
+			s.src = "https://giscus.app/client.js";
+			s.async = true;
+			s.crossOrigin = "anonymous";
+			const attrs: Record<string, string> = {
+				"data-repo": slot.dataset.repo!,
+				"data-repo-id": slot.dataset.repoId!,
+				"data-category": slot.dataset.category!,
+				"data-category-id": slot.dataset.categoryId!,
+				"data-mapping": slot.dataset.mapping!,
+				"data-strict": slot.dataset.strict!,
+				"data-reactions-enabled": slot.dataset.reactionsEnabled!,
+				"data-emit-metadata": "0",
+				"data-input-position": slot.dataset.inputPosition!,
+				"data-theme": themeFor(slot),
+				"data-lang": slot.dataset.lang!,
+			};
+			for (const [k, v] of Object.entries(attrs)) s.setAttribute(k, v);
+			slot.appendChild(s);
+		};
+		const io = new IntersectionObserver(
+			(entries) => {
+				if (entries.some((e) => e.isIntersecting)) {
+					io.disconnect();
+					load();
+				}
+			},
+			{ rootMargin: "400px 0px" },
+		);
+		io.observe(slot);
+		document.addEventListener("astro:before-swap", () => io.disconnect(), { once: true });
+	}
+	// 切换深浅模式时通知 giscus 换主题
+	window.addEventListener("plume:theme", () => {
+		const slot = document.querySelector<HTMLElement>(".giscus-slot");
+		const frame = document.querySelector<HTMLIFrameElement>("iframe.giscus-frame");
+		if (!slot || !frame?.contentWindow) return;
+		frame.contentWindow.postMessage({ giscus: { setConfig: { theme: themeFor(slot) } } }, "https://giscus.app");
+	});
+	document.addEventListener("astro:page-load", mount);
+</script>
+
+<style>
+	.comments {
+		margin-top: var(--s7);
+		padding-top: var(--s5);
+		border-top: 1px solid var(--c-border);
+	}
+	.cm-title {
+		display: flex;
+		align-items: baseline;
+		gap: var(--s2);
+		margin-bottom: var(--s4);
+		font-family: var(--font-serif);
+		font-weight: 600;
+		font-size: var(--fs-h3);
+		line-height: var(--lh-h3);
+		color: var(--c-strong);
+	}
+	.cm-title .latin {
+		font-style: italic;
+		font-size: var(--fs-body);
+		color: var(--c-accent);
+	}
+	.giscus-slot {
+		min-height: 160px;
+	}
+	.giscus-slot:has(iframe) .cm-loading {
+		display: none;
+	}
+	.cm-off {
+		margin-top: var(--s6);
+		padding: var(--s3);
+		border: 1px dashed var(--c-hairline);
+		border-radius: var(--r-btn);
+	}
+</style>

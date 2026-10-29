@@ -45,6 +45,21 @@ export const music: { enable: boolean; volume: number; playlist: { title: string
 	playlist: [],
 };
 
+// 评论：giscus（基于 GitHub Discussions）。
+// 在 https://giscus.app 填仓库后，把页面生成的 repo / repoId / category / categoryId 抄到这里；
+// repoId 留空时评论区不显示。仓库必须是公开的，并且开启了 Discussions、装了 giscus App。
+export const comments = {
+	repo: "", // 例如 "TextlineX/blog-comments"
+	repoId: "",
+	category: "Announcements",
+	categoryId: "",
+	mapping: "pathname" as "pathname" | "url" | "title" | "og:title",
+	strict: true, // 按标题哈希精确匹配，避免相似标题串到同一个讨论
+	reactions: true,
+	inputPosition: "top" as "top" | "bottom",
+	lang: "zh-CN",
+};
+
 // 文章底部许可
 export const license = { name: "CC BY-NC-SA 4.0", url: "https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" };
 

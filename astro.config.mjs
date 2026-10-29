@@ -1,13 +1,14 @@
 // @ts-check
 import sitemap from "@astrojs/sitemap";
 import { defineConfig } from "astro/config";
+import pagefindIndex from "./src/integrations/pagefind.mjs";
 import pruneFontFaces from "./src/integrations/prune-font-faces.mjs";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
 
 export default defineConfig({
 	site: "https://blog.textline.top",
 	trailingSlash: "always",
-	integrations: [sitemap(), pruneFontFaces()],
+	integrations: [sitemap(), pruneFontFaces(), pagefindIndex()],
 	markdown: {
 		remarkPlugins: [remarkReadingTime],
 		shikiConfig: {

@@ -21,8 +21,14 @@ interface Props {
 	ogType?: "website" | "article";
 	/** 阅读页：角色栏收窄，把宽度让给正文和页边目录 */
 	slim?: boolean;
+	/** 分享卡片路径，默认首页卡片（构建时生成，见 src/pages/og/） */
+	ogImage?: string;
+	/** 文章的发布时间、修改时间（写进 article:published_time 等元信息） */
+	published?: Date;
+	updated?: Date;
 }
-const { title, description = site.subtitle, ogType = "website", slim = false } = Astro.props;
+const { title, description = site.subtitle, ogType = "website", slim = false, ogImage = "/og/index.png", published, updated } = Astro.props;
+const ogUrl = new URL(ogImage, Astro.site);
 const fullTitle = title ? `${title} · ${site.title}` : `${site.title} · ${site.subtitle}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 // 内容区换页动画：旧内容 150ms 淡出（M3 强调加速），新内容 300ms 淡入并上浮 8px（M3 强调减速）
@@ -51,6 +57,15 @@ const icon = {
 		<meta property="og:title" content={title ?? site.title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:url" content={canonical} />
+		<meta property="og:site_name" content={site.title} />
+		<meta property="og:locale" content="zh_CN" />
+		<meta property="og:image" content={ogUrl} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:image" content={ogUrl} />
+		{published && <meta property="article:published_time" content={published.toISOString()} />}
+		{updated && <meta property="article:modified_time" content={updated.toISOString()} />}
 		<link rel="alternate" type="application/rss+xml" title={site.title} href="/rss.xml" />
 		<link rel="sitemap" href="/sitemap-index.xml" />
 		<link rel="icon" href={icon.light} media="(prefers-color-scheme: light)" />

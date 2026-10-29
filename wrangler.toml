@@ -1,3 +1,10 @@
+# Cloudflare Workers（静态资源）部署配置
+#
+# Workers Builds 后台（Settings → Build）建议填写：
+#   Build command:  pnpm run build      （搜索索引和分享卡片都在 astro build 流程里生成，填 npx astro build 也可以）
+#   Deploy command: npx wrangler deploy （默认值）
+# Node 版本读取根目录的 .node-version；pnpm 版本读取 package.json 的 packageManager 字段。
+# 缓存与跨域响应头见 public/_headers。
 name = "plume-journal"
 compatibility_date = "2026-10-28"
 
