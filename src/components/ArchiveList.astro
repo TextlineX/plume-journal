@@ -1,7 +1,7 @@
 ---
 // 归档列表：按年分组。每行「日期 · 标题 ………… 分类」，标题和分类之间用引导点连接，
 // 是书籍目录的排法（Bringhurst《The Elements of Typographic Style》4.4 节）。
-import { categoryUrl, fmtDate, pad, type Post, postUrl } from "../lib/posts";
+import { categoryUrl, fmtDate, pad, postNo, type Post, postUrl } from "../lib/posts";
 
 interface Props {
 	posts: Post[];
@@ -25,7 +25,7 @@ for (const p of posts) {
 					<li class="row">
 						<time class="row-date caption" datetime={p.data.published.toISOString()}>{fmtDate(p.data.published, "md")}</time>
 						<a href={postUrl(p)} class="row-title">
-							<span class="row-no latin" aria-hidden="true">{pad(p.no)}</span>
+							<span class="row-no latin" aria-hidden="true">{postNo(p)}</span>
 							{p.data.title}
 						</a>
 						<span class="row-leader" aria-hidden="true"></span>

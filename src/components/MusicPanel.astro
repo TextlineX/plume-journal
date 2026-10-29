@@ -5,12 +5,12 @@ import Icon from "./Icon.astro";
 
 const first = music.playlist[0];
 ---
-{music.enable && (
+{music.enable && music.playlist.length > 0 && (
 	<div class="music" id="music-panel" role="dialog" aria-label="音乐" hidden data-tracks={JSON.stringify(music.playlist)} data-volume={music.volume}>
 		<div class="mu-disc" aria-hidden="true"><span class="diamond"></span></div>
 		<div class="mu-info">
-			<div class="mu-title">{first ? first.title : "还没有歌"}</div>
-			<div class="mu-artist caption">{first ? first.artist : "在 site.config.ts 的 music.playlist 里添加"}</div>
+			<div class="mu-title">{first?.title}</div>
+			<div class="mu-artist caption">{first?.artist}</div>
 			<div class="mu-bar" aria-hidden="true"><span></span></div>
 		</div>
 		<button type="button" class="mu-btn mu-play" aria-label="播放" disabled={!first}>

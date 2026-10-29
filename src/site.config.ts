@@ -38,7 +38,7 @@ export const nav: { name: string; url: string; hideWhenEmpty?: boolean }[] = [
 // focusX / focusY：立绘裁切时保留的位置（0–1）。她在原图里偏右，所以 X 取 0.74，让脸落在栏的中线附近
 export const character = { day: charDay, night: charNight, focusX: 0.74, focusY: 0.06 };
 
-// 音乐：src 放在 public/music/ 下，例如 "/music/song.mp3"
+// 音乐：src 放在 public/music/ 下，例如 "/music/song.mp3"。歌单为空时不显示音乐按钮
 export const music: { enable: boolean; volume: number; playlist: { title: string; artist: string; src: string }[] } = {
 	enable: false,
 	volume: 0.6,

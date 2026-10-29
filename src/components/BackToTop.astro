@@ -1,0 +1,54 @@
+---
+// 回到顶部：滚过一屏后出现在右下角
+import Icon from "./Icon.astro";
+---
+<button type="button" class="to-top" id="to-top" aria-label="回到顶部" hidden>
+	<Icon name="arrow-left" class="tt-ic" />
+</button>
+
+<script>
+	function setup() {
+		const b = document.getElementById("to-top");
+		if (!b || b.dataset.bound) return;
+		b.dataset.bound = "1";
+		const on = () => b.toggleAttribute("hidden", window.scrollY < window.innerHeight);
+		on();
+		window.addEventListener("scroll", on, { passive: true });
+		b.addEventListener("click", () => window.scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }));
+	}
+	document.addEventListener("astro:page-load", setup);
+</script>
+
+<style>
+	.to-top {
+		position: fixed;
+		right: var(--s4);
+		bottom: var(--s4);
+		z-index: 20;
+		width: 44px;
+		height: 44px;
+		display: grid;
+		place-items: center;
+		border-radius: 50%;
+		background: var(--c-surface);
+		color: var(--c-secondary);
+		box-shadow: var(--e-pop);
+		animation: tt-in var(--dur-medium2) var(--ease-emph-dec);
+	}
+	.to-top[hidden] {
+		display: none;
+	}
+	.to-top:hover {
+		color: var(--c-on-container);
+		background: var(--c-container);
+	}
+	.to-top :global(.tt-ic) {
+		transform: rotate(90deg);
+	}
+	@keyframes tt-in {
+		from {
+			opacity: 0;
+			transform: translateY(8px);
+		}
+	}
+</style>

@@ -1,6 +1,6 @@
 ---
 // 分类与标签索引：分类用文字链 + 篇数，标签用细框胶囊。当前项高亮。
-import { categoryUrl, countBy, type Post, tagUrl } from "../lib/posts";
+import { allSeries, categoryUrl, countBy, type Post, seriesOf, seriesUrl, tagUrl } from "../lib/posts";
 
 interface Props {
 	posts: Post[];
@@ -9,6 +9,7 @@ interface Props {
 const { posts, current } = Astro.props;
 const cats = countBy(posts, "category");
 const tags = countBy(posts, "tags");
+const series = allSeries(posts).map((s) => [s, seriesOf(posts, s).length] as const);
 const is = (type: "tag" | "category", v: string) => current?.type === type && current.value === v;
 ---
 <div class="terms">
@@ -21,6 +22,14 @@ const is = (type: "tag" | "category", v: string) => current?.type === type && cu
 			))}
 		</ul>
 	</div>
+	{series.length > 0 && (
+		<div class="term-row">
+			<span class="term-label caption">系列</span>
+			<ul class="cats">
+				{series.map(([s, n]) => <li><a href={seriesUrl(s)} class="cat">{s}<span class="n">{n}</span></a></li>)}
+			</ul>
+		</div>
+	)}
 	<div class="term-row">
 		<span class="term-label caption">标签</span>
 		<ul class="tags">

@@ -8,17 +8,18 @@ import Pagination from "../components/Pagination.astro";
 import Portrait from "../components/Portrait.astro";
 import PostEntry from "../components/PostEntry.astro";
 import Base from "../layouts/Base.astro";
-import { getPosts, type Post, pad } from "../lib/posts";
+import { getPosts, homeOrder, type Post, pad } from "../lib/posts";
 import { profile, site } from "../site.config";
 
 export const getStaticPaths = (async ({ paginate }) => {
 	const posts = await getPosts();
-	return paginate(posts, { pageSize: site.postsPerPage, props: { all: posts } });
+	return paginate(homeOrder(posts), { pageSize: site.postsPerPage, props: { all: posts } });
 }) satisfies GetStaticPaths;
 
 const { page, all } = Astro.props as { page: Page<Post>; all: Post[] };
 const first = page.currentPage === 1;
-const latest = page.data[0];
+const latest = all.find((p) => !p.data.draft);
+const published = all.filter((p) => !p.data.draft).length;
 const issueDate = latest ? `${latest.data.published.getUTCFullYear()}.${pad(latest.data.published.getUTCMonth() + 1)}` : "";
 ---
 <Base title={first ? undefined : `目录 · 第 ${page.currentPage} 页`}>
@@ -30,7 +31,7 @@ const issueDate = latest ? `${latest.data.published.getUTCFullYear()}.${pad(late
 			<header class="masthead">
 				<p class="mh-line">
 					<span class="eyebrow">{site.eyebrow}</span>
-					<span class="caption mh-issue">No. {pad(page.total)} <span aria-hidden="true">·</span> {issueDate}</span>
+					<span class="caption mh-issue">No. {pad(published)} <span aria-hidden="true">·</span> {issueDate}</span>
 				</p>
 				<h1 class="mh-title serif">{site.subtitle}</h1>
 				<p class="mh-intro">{site.intro}</p>

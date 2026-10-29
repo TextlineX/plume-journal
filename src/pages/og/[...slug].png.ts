@@ -18,7 +18,7 @@ export const GET: APIRoute = async ({ props, site: siteUrl }) => {
 		props.kind === "post"
 			? {
 					eyebrow: site.eyebrow,
-					meta: `No. ${pad(props.post.no)} · ${fmtDate(props.post.data.published)}${props.post.data.category ? ` · ${props.post.data.category}` : ""}`,
+					meta: `${props.post.no > 0 ? `No. ${pad(props.post.no)}` : "草稿"} · ${fmtDate(props.post.data.published)}${props.post.data.category ? ` · ${props.post.data.category}` : ""}`,
 					title: props.post.data.title,
 					desc: props.post.data.description,
 					site: site.title,

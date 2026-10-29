@@ -32,7 +32,7 @@ const titleLong = [...site.title].length > 6;
 
 	<div class="tabs-tools">
 		<button type="button" class="icon-btn" data-open-search aria-label="搜索（快捷键 /）"><Icon name="search" /></button>
-		{music.enable && <button type="button" class="icon-btn" data-open-music aria-label="音乐"><Icon name="music" /></button>}
+		{music.enable && music.playlist.length > 0 && <button type="button" class="icon-btn" data-open-music aria-label="音乐"><Icon name="music" /></button>}
 		<button type="button" class="icon-btn" data-theme-toggle aria-label="切换深浅模式">
 			<Icon name="sun" class="ic-sun" />
 			<Icon name="moon" class="ic-moon" />

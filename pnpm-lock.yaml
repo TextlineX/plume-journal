@@ -166,6 +166,9 @@ importers:
 
   .:
     dependencies:
+      '@astrojs/markdown-remark':
+        specifier: 6.3.7
+        version: 6.3.7
       '@astrojs/rss':
         specifier: 4.0.14
         version: 4.0.14
@@ -178,9 +181,6 @@ importers:
       '@fontsource/cormorant-garamond':
         specifier: 5.3.0
         version: 5.3.0
-      '@fontsource/noto-sans-sc':
-        specifier: 5.3.1
-        version: 5.3.1
       '@fontsource/noto-serif-sc':
         specifier: 5.3.1
         version: 5.3.1
@@ -196,9 +196,6 @@ importers:
       pagefind:
         specifier: 1.4.0
         version: 1.4.0
-      reading-time:
-        specifier: 1.5.0
-        version: 1.5.0
       satori:
         specifier: 0.63.2
         version: 0.63.2
@@ -415,9 +412,6 @@ packages:
 
   '@fontsource/cormorant-garamond@5.3.0':
     resolution: {integrity: sha512-weuGsCirGVWBWqpt6YUp0yLThTe4G8YO45noq8wxeJCRvEpq5lFrxNMFSTxcyOyV5k5otzJ8guDzYegdYlcLMQ==}
-
-  '@fontsource/noto-sans-sc@5.3.1':
-    resolution: {integrity: sha512-YxZ/VWAWo9FWzH08Q6fGTzIW6vYNP2TMhUFCnfhlimbhdXnWrxJLrzX3KWt2FKnV0s8XiM5vjpGHQiyFRlTj0w==}
 
   '@fontsource/noto-serif-sc@5.3.1':
     resolution: {integrity: sha512-nIK2HyNGcUi2TGwIfrk2MItkh0O3Y5+TI8iPfPSzoNY6uyXYfQ9qqch8czk3aa1VhV4EU52uwCYCe1UDKJELpg==}
@@ -1572,9 +1566,6 @@ packages:
     resolution: {integrity: sha512-Kko+Y5XQ6fM+Ce3dq3m9YGxnacYZYl9cA1wZjaF3Vbry2L3i1qVg8+CAgNPsXRArPMUMCaOR7oa9Nqntc43JKA==}
     engines: {node: '>= 20.19.0'}
 
-  reading-time@1.5.0:
-    resolution: {integrity: sha512-onYyVhBNr4CmAxFsKS7bz+uTLRakypIe4R+5A824vBSkQy/hB3fZepoVEf8OVAxzLvK+H/jm9TzpI3ETSm64Kg==}
-
   regex-recursion@6.0.2:
     resolution: {integrity: sha512-0YCaSCq2VRIebiaUviZNs0cBz1kg5kVS2UKUfNIx8YVs1cN3AV7NTctO5FOKBA+UT2BPJIWZauYHPqJODG50cg==}
 
@@ -2135,8 +2126,6 @@ snapshots:
   '@fontsource-variable/jetbrains-mono@5.2.8': {}
 
   '@fontsource/cormorant-garamond@5.3.0': {}
-
-  '@fontsource/noto-sans-sc@5.3.1': {}
 
   '@fontsource/noto-serif-sc@5.3.1': {}
 
@@ -3417,8 +3406,6 @@ snapshots:
   radix3@1.1.2: {}
 
   readdirp@5.1.1: {}
-
-  reading-time@1.5.0: {}
 
   regex-recursion@6.0.2:
     dependencies:

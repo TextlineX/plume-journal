@@ -1,0 +1,81 @@
+---
+// 系列导航：文章属于某个系列时，在正文前列出同系列的全部文章，当前篇高亮。
+import { type Post, postUrl, seriesUrl } from "../lib/posts";
+
+interface Props {
+	name: string;
+	list: Post[];
+	current: string;
+}
+const { name, list, current } = Astro.props;
+const idx = list.findIndex((p) => p.id === current);
+---
+<nav class="series" aria-label={`系列：${name}`} data-pagefind-ignore>
+	<p class="sr-head">
+		<span class="latin">Series</span>
+		<a href={seriesUrl(name)} class="sr-name serif">{name}</a>
+		<span class="caption">第 {idx + 1} / {list.length} 篇</span>
+	</p>
+	<ol class="sr-list">
+		{list.map((p, i) => (
+			<li class:list={{ current: p.id === current }}>
+				<span class="sr-i latin" aria-hidden="true">{i + 1}</span>
+				{p.id === current ? <span aria-current="page">{p.data.title}</span> : <a href={postUrl(p)}>{p.data.title}</a>}
+			</li>
+		))}
+	</ol>
+</nav>
+
+<style>
+	.series {
+		margin-bottom: var(--s5);
+		padding: var(--s3) var(--s4);
+		border-radius: var(--r-card);
+		border: 1px solid var(--c-hairline);
+	}
+	.sr-head {
+		display: flex;
+		align-items: baseline;
+		gap: 12px;
+		flex-wrap: wrap;
+	}
+	.sr-head .latin {
+		font-style: italic;
+		color: var(--c-accent);
+	}
+	.sr-name {
+		color: var(--c-strong);
+	}
+	.sr-name:hover {
+		color: var(--c-link);
+	}
+	.sr-list {
+		list-style: none;
+		padding: 0;
+		margin-top: var(--s2);
+	}
+	.sr-list li {
+		display: flex;
+		gap: 12px;
+		font-size: var(--fs-small);
+		line-height: var(--lh-small);
+		padding: 4px 0;
+		color: var(--c-secondary);
+	}
+	.sr-i {
+		width: 16px;
+		flex: none;
+		text-align: right;
+		color: var(--c-muted);
+	}
+	.sr-list a:hover {
+		color: var(--c-link);
+	}
+	.sr-list .current {
+		color: var(--c-strong);
+		font-weight: 500;
+	}
+	.sr-list .current .sr-i {
+		color: var(--c-gold-strong);
+	}
+</style>

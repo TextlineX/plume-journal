@@ -34,6 +34,31 @@
 	background: var(--c-gold);
 	transform: rotate(45deg);
 }
+/* 标题锚点：悬停或键盘聚焦时出现 */
+.prose .h-anchor {
+	margin-left: 0.4em;
+	color: var(--c-gold-strong);
+	text-decoration: none;
+	opacity: 0;
+	transition: opacity var(--dur-short3) var(--ease-standard);
+}
+.prose h2:hover .h-anchor,
+.prose h3:hover .h-anchor,
+.prose .h-anchor:focus-visible {
+	opacity: 1;
+}
+/* 站外链接：右上角一个小箭头 */
+.prose a.ext::after {
+	content: "↗";
+	display: inline-block;
+	margin-left: 2px;
+	font-size: 0.75em;
+	color: var(--c-muted);
+	text-decoration: none;
+}
+.prose img {
+	cursor: zoom-in;
+}
 .prose h3 {
 	margin-top: var(--s6);
 	font-size: var(--fs-h3);

@@ -5,31 +5,47 @@ import { Image } from "astro:assets";
 import { render } from "astro:content";
 import Comments from "../../components/Comments.astro";
 import Icon from "../../components/Icon.astro";
+import SeriesBox from "../../components/SeriesBox.astro";
 import Sticker from "../../components/Sticker.astro";
 import Base from "../../layouts/Base.astro";
-import { categoryUrl, fmtDate, getPosts, pad, type Post, postUrl, tagUrl } from "../../lib/posts";
+import { categoryUrl, fmtDate, getPosts, postNo, type Post, postUrl, seriesOf, tagUrl } from "../../lib/posts";
 import { license, site } from "../../site.config";
 import "../../styles/prose.css";
 
 export async function getStaticPaths() {
 	const posts = await getPosts();
-	return posts.map((post, i) => ({
-		params: { slug: post.id },
-		props: { post, newer: posts[i - 1], older: posts[i + 1] },
-	}));
+	// 上一篇 / 下一篇只在已发布的文章之间跳（草稿预览时也不会把草稿串进来）
+	const live = posts.filter((p) => !p.data.draft);
+	return posts.map((post) => {
+		const i = live.indexOf(post);
+		return {
+			params: { slug: post.id },
+			props: {
+				post,
+				newer: i >= 0 ? live[i - 1] : undefined,
+				older: i >= 0 ? live[i + 1] : undefined,
+				series: post.data.series ? seriesOf(posts, post.data.series) : [],
+			},
+		};
+	});
 }
 
-const { post, newer, older } = Astro.props as { post: Post; newer?: Post; older?: Post };
+const { post, newer, older, series } = Astro.props as { post: Post; newer?: Post; older?: Post; series: Post[] };
 const { Content, headings, remarkPluginFrontmatter: fm } = await render(post);
 const { data } = post;
 const toc = headings.filter((h) => h.depth <= 3 && h.slug !== "footnote-label");
 ---
-<Base title={data.title} description={data.description || site.subtitle} ogType="article" slim ogImage={`/og/posts/${post.id}.png`} published={data.published} updated={data.updated}>
+<Base title={data.title} description={data.description || site.subtitle} ogType="article" slim noindex={data.draft} ogImage={`/og/posts/${post.id}.png`} published={data.published} updated={data.updated}>
+	<div class="read-progress" id="read-progress" aria-hidden="true"></div>
+	<dialog class="img-zoom" id="img-zoom" aria-label="图片大图">
+		<img alt="" />
+		<p class="caption"></p>
+	</dialog>
 	<div class="post">
 		<header class="post-head">
 			<a href="/" class="back caption"><Icon name="arrow-left" size={16} />目录</a>
 			<p class="post-meta caption">
-				<span class="latin post-no">No. {pad(post.no)}</span>
+				<span class="latin post-no">{post.no > 0 ? `No. ${postNo(post)}` : "草稿"}</span>
 				{data.category && (
 					<>
 						<span class="dot" aria-hidden="true"></span>
@@ -38,15 +54,18 @@ const toc = headings.filter((h) => h.depth <= 3 && h.slug !== "footnote-label");
 				)}
 				<span class="dot" aria-hidden="true"></span>
 				<time datetime={data.published.toISOString()}>{fmtDate(data.published)}</time>
+				{data.updated && <span class="post-upd">（更新于 <time datetime={data.updated.toISOString()}>{fmtDate(data.updated)}</time>）</span>}
 				<span class="dot" aria-hidden="true"></span>
 				<span>{fm.words.toLocaleString()} 字 · {fm.minutes} 分钟</span>
 			</p>
+			{data.draft && <p class="draft-note caption">草稿预览：这篇文章还没有发布，正式构建时不会生成这一页。</p>}
 			<h1 class="post-title serif" data-pagefind-meta="title">{data.title}</h1>
 			{data.description && <p class="post-desc">{data.description}</p>}
 		</header>
 
 		<div class="post-grid">
 			<article class="post-body" data-pagefind-body>
+				{series.length > 1 && <SeriesBox name={data.series!} list={series} current={post.id} />}
 				{toc.length > 1 && (
 					<details class="toc-fold" data-pagefind-ignore>
 						<summary>本文目录</summary>
@@ -133,6 +152,34 @@ const toc = headings.filter((h) => h.depth <= 3 && h.slug !== "footnote-label");
 			window.addEventListener("scroll", onScroll, { passive: true });
 			document.addEventListener("astro:before-swap", () => window.removeEventListener("scroll", onScroll), { once: true });
 		}
+		// 阅读进度：按正文区域算，2px 金线
+		const bar = document.getElementById("read-progress");
+		const body = document.querySelector<HTMLElement>(".post-body");
+		if (bar && body) {
+			const upd = () => {
+				const r = body.getBoundingClientRect();
+				const total = r.height - window.innerHeight * 0.6;
+				const p = Math.min(1, Math.max(0, -r.top / Math.max(1, total)));
+				bar.style.transform = `scaleX(${p})`;
+			};
+			upd();
+			window.addEventListener("scroll", upd, { passive: true });
+			document.addEventListener("astro:before-swap", () => window.removeEventListener("scroll", upd), { once: true });
+		}
+		// 正文图片点击放大
+		const zoom = document.getElementById("img-zoom") as HTMLDialogElement | null;
+		if (zoom) {
+			document.querySelectorAll<HTMLImageElement>(".prose img").forEach((img) =>
+				img.addEventListener("click", () => {
+					const z = zoom.querySelector("img")!;
+					z.src = img.currentSrc || img.src;
+					z.alt = img.alt;
+					zoom.querySelector("p")!.textContent = img.alt;
+					zoom.showModal();
+				}),
+			);
+			zoom.addEventListener("click", () => zoom.close());
+		}
 		document.querySelectorAll<HTMLPreElement>(".prose pre").forEach((pre) => {
 			if (pre.querySelector(".copy-btn")) return;
 			const b = document.createElement("button");
@@ -157,6 +204,45 @@ const toc = headings.filter((h) => h.depth <= 3 && h.slug !== "footnote-label");
 <style>
 	.post {
 		max-width: calc(var(--measure) + var(--s6) + var(--aside-w));
+	}
+	.read-progress {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 50;
+		height: 2px;
+		background: var(--c-gold);
+		transform: scaleX(0);
+		transform-origin: 0 50%;
+		pointer-events: none;
+	}
+	.img-zoom {
+		max-width: none;
+		max-height: none;
+		width: 100vw;
+		height: 100vh;
+		margin: 0;
+		padding: var(--s6);
+		border: 0;
+		background: rgb(10 9 20 / 0.92);
+		cursor: zoom-out;
+	}
+	.img-zoom[open] {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: var(--s3);
+	}
+	.img-zoom img {
+		max-width: 100%;
+		max-height: calc(100vh - 140px);
+		object-fit: contain;
+		border-radius: 4px;
+	}
+	.img-zoom .caption {
+		color: #cfc9e6;
 	}
 	/* 超宽屏：文章（正文 + 页边目录）在版心里居中 */
 	@media (min-width: 1600px) {
@@ -191,6 +277,15 @@ const toc = headings.filter((h) => h.depth <= 3 && h.slug !== "footnote-label");
 		height: 4px;
 		background: var(--c-gold);
 		transform: rotate(45deg);
+	}
+	.post-upd {
+		color: var(--c-muted);
+	}
+	.draft-note {
+		margin-top: var(--s3);
+		padding: var(--s2) var(--s3);
+		border: 1px dashed var(--c-muted);
+		border-radius: var(--r-btn);
 	}
 	.post-cat {
 		color: var(--c-gold-strong);

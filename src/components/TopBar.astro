@@ -42,7 +42,7 @@ const isActive = (url: string) => active(path, url);
 			</li>
 		))}
 	</ul>
-	{music.enable && <button type="button" class="ms-music" data-open-music><Icon name="music" size={18} />音乐</button>}
+	{music.enable && music.playlist.length > 0 && <button type="button" class="ms-music" data-open-music><Icon name="music" size={18} />音乐</button>}
 </dialog>
 
 <style>

@@ -2,14 +2,39 @@ import { type CollectionEntry, getCollection } from "astro:content";
 
 export type Post = CollectionEntry<"posts"> & { no: number };
 
-// 按发布时间倒序；no 是从最早一篇开始的编号（No. 01 是第一篇），给目录用
+// 草稿什么时候可见：开发模式（pnpm dev），或预览构建（SHOW_DRAFTS=1 pnpm build）。
+// 正式构建里草稿不生成页面，也不进 RSS、站点地图和搜索。
+export const showDrafts = import.meta.env.DEV || process.env.SHOW_DRAFTS === "1";
+
+// 按发布时间倒序；no 是从最早一篇开始的编号（No. 01 是第一篇），给目录用。草稿不占编号。
 export async function getPosts(): Promise<Post[]> {
-	const all = await getCollection("posts", ({ data }) => import.meta.env.DEV || !data.draft);
+	const all = await getCollection("posts", ({ data }) => showDrafts || !data.draft);
 	const asc = all.sort((a, b) => a.data.published.valueOf() - b.data.published.valueOf());
-	return asc.map((p, i) => Object.assign(p, { no: i + 1 })).reverse();
+	let n = 0;
+	return asc.map((p) => Object.assign(p, { no: p.data.draft ? 0 : ++n })).reverse();
 }
 
+// 首页目录顺序：置顶在前（置顶之间按时间倒序），其余按时间倒序
+export function homeOrder(posts: Post[]) {
+	return [...posts.filter((p) => p.data.pinned), ...posts.filter((p) => !p.data.pinned)];
+}
+
+// 同一系列的文章，按 seriesOrder，其次按发布时间
+export function seriesOf(posts: Post[], name: string) {
+	return posts
+		.filter((p) => p.data.series === name)
+		.sort((a, b) => (a.data.seriesOrder ?? 1e9) - (b.data.seriesOrder ?? 1e9) || a.data.published.valueOf() - b.data.published.valueOf());
+}
+
+export function allSeries(posts: Post[]) {
+	return [...new Set(posts.map((p) => p.data.series).filter(Boolean))] as string[];
+}
+
+export const seriesUrl = (s: string) => `/series/${encodeURIComponent(s)}/`;
+
 export const pad = (n: number) => String(n).padStart(2, "0");
+// 文章编号：草稿没有编号，目录里显示一条短横线（文章页另有「草稿」标记）
+export const postNo = (p: { no: number }) => (p.no > 0 ? pad(p.no) : "—");
 
 export function fmtDate(d: Date, style: "full" | "md" = "full") {
 	const y = d.getUTCFullYear();

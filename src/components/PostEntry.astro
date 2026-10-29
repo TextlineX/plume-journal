@@ -3,7 +3,7 @@
 // 层级靠字号和字体（编号拉丁衬线、标题宋体、摘要黑体）区分（NN/g 视觉层级、Gestalt 接近原则）。
 import { Image } from "astro:assets";
 import { render } from "astro:content";
-import { categoryUrl, fmtDate, pad, type Post, postUrl } from "../lib/posts";
+import { categoryUrl, fmtDate, postNo, type Post, postUrl, seriesUrl } from "../lib/posts";
 
 interface Props {
 	post: Post;
@@ -14,14 +14,23 @@ const { data } = post;
 const { remarkPluginFrontmatter: fm } = await render(post);
 ---
 <article class:list={["entry", { featured }]}>
-	<div class="entry-no latin" aria-hidden="true">{pad(post.no)}</div>
+	<div class="entry-no latin" aria-hidden="true">{postNo(post)}</div>
 	<div class="entry-body">
 		<p class="entry-meta caption">
+			{data.pinned && <span class="flag flag-pin">置顶</span>}
+			{data.draft && <span class="flag flag-draft">草稿</span>}
 			<time datetime={data.published.toISOString()}>{fmtDate(data.published)}</time>
+			{data.updated && <span class="entry-upd">更新于 {fmtDate(data.updated)}</span>}
 			{data.category && (
 				<>
 					<span class="dot" aria-hidden="true"></span>
 					<a href={categoryUrl(data.category)} class="entry-cat">{data.category}</a>
+				</>
+			)}
+			{data.series && (
+				<>
+					<span class="dot" aria-hidden="true"></span>
+					<a href={seriesUrl(data.series)} class="entry-cat">系列 · {data.series}</a>
 				</>
 			)}
 			<span class="dot" aria-hidden="true"></span>
@@ -67,6 +76,26 @@ const { remarkPluginFrontmatter: fm } = await render(post);
 		height: 4px;
 		background: var(--c-gold);
 		transform: rotate(45deg);
+	}
+	/* 置顶、草稿标记：小号描边胶囊，置顶用金、草稿用虚线 */
+	.flag {
+		display: inline-flex;
+		align-items: center;
+		height: 20px;
+		padding: 0 8px;
+		border-radius: 999px;
+		border: 1px solid var(--c-gold);
+		color: var(--c-gold-strong);
+		font-size: var(--fs-caption);
+		line-height: 1;
+	}
+	.flag-draft {
+		border-style: dashed;
+		border-color: var(--c-muted);
+		color: var(--c-muted);
+	}
+	.entry-upd {
+		color: var(--c-muted);
 	}
 	.entry-cat {
 		color: var(--c-gold-strong);
