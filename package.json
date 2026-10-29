@@ -11,7 +11,8 @@
     "new-post": "node scripts/new-post.mjs",
     "check:handoff": "node handoff/codex/scripts/check-handoff.mjs",
     "deploy": "astro build && npx wrangler deploy",
-    "preview:cf": "astro build && npx wrangler dev"
+    "preview:cf": "astro build && npx wrangler dev",
+    "build:drafts": "SHOW_DRAFTS=1 astro build"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "6.3.7",
