@@ -1,5 +1,6 @@
 ---
 // 友链：通讯录式条目。没有头像时用名字首字做一枚「印章」（宋体，细框圆角方块）。
+import EmptyState from "../components/EmptyState.astro";
 import Icon from "../components/Icon.astro";
 import { friends, myLinkCard } from "../data/friends";
 import Base from "../layouts/Base.astro";
@@ -13,6 +14,7 @@ const myInfo = `名称：${myLinkCard.name}\n地址：${myLinkCard.url}\n头像�
 		<p>朋友们的站点。想交换友链，复制下面的信息发给我。</p>
 	</header>
 
+	{friends.length === 0 && <EmptyState title="还没有交换友链" text="欢迎来交换。复制下面的本站信息，通过 GitHub 或评论区告诉我。" />}
 	<ul class="friends">
 		{friends.map((f) => (
 			<li>

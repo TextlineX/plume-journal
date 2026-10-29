@@ -1,11 +1,12 @@
 ---
 // 窄屏（< 1024）顶栏：角色栏和竖排页签收起后的替代。
 // 768–1023 页签横排在顶栏里；< 768 收进菜单。不用玻璃材质，实色底 + 发丝线。
-import { nav, site } from "../site.config";
+import { isActive as active, visibleNav } from "../lib/nav";
+import { music, site } from "../site.config";
 import Icon from "./Icon.astro";
 
 const path = Astro.url.pathname;
-const isActive = (url: string) => (url === "/" ? path === "/" || /^\/(page|posts)\//.test(path) : path.startsWith(url));
+const isActive = (url: string) => active(path, url);
 ---
 <header class="topbar">
 	<a href="/" class="tb-title serif">
@@ -13,7 +14,7 @@ const isActive = (url: string) => (url === "/" ? path === "/" || /^\/(page|posts
 		{site.title}
 	</a>
 	<nav class="tb-nav" aria-label="主导航">
-		{nav.map((item) => (
+		{visibleNav.map((item) => (
 			<a href={item.url} class:list={["tb-link", { active: isActive(item.url) }]} aria-current={isActive(item.url) ? "page" : undefined}>{item.name}</a>
 		))}
 	</nav>
@@ -33,7 +34,7 @@ const isActive = (url: string) => (url === "/" ? path === "/" || /^\/(page|posts
 		<button type="button" class="icon-btn" data-close-dialog aria-label="关闭菜单"><Icon name="close" /></button>
 	</div>
 	<ul class="ms-list">
-		{nav.map((item) => (
+		{visibleNav.map((item) => (
 			<li>
 				<a href={item.url} class:list={["ms-link", { active: isActive(item.url) }]}>
 					<span class="ms-mark" aria-hidden="true"></span>{item.name}
@@ -41,7 +42,7 @@ const isActive = (url: string) => (url === "/" ? path === "/" || /^\/(page|posts
 			</li>
 		))}
 	</ul>
-	<button type="button" class="ms-music" data-open-music><Icon name="music" size={18} />音乐</button>
+	{music.enable && <button type="button" class="ms-music" data-open-music><Icon name="music" size={18} />音乐</button>}
 </dialog>
 
 <style>

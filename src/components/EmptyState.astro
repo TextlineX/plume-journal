@@ -1,0 +1,52 @@
+---
+// 空状态：页面没有内容时显示。一枚空心金菱形 + 一句话，不放插画（贴纸到位后可换成 Q 版）
+import Sticker from "./Sticker.astro";
+
+interface Props {
+	title: string;
+	text?: string;
+	sticker?: string;
+}
+const { title, text, sticker = "empty" } = Astro.props;
+---
+<div class="empty">
+	<div class="empty-mark" aria-hidden="true">
+		<Sticker name={sticker} size={72}><span class="empty-diamond"></span></Sticker>
+	</div>
+	<p class="empty-title serif">{title}</p>
+	{text && <p class="empty-text">{text}</p>}
+	<slot />
+</div>
+
+<style>
+	.empty {
+		max-width: var(--content-max);
+		padding: var(--s6) 0;
+		border-top: 1px solid var(--c-border);
+		border-bottom: 1px solid var(--c-border);
+	}
+	.empty-mark {
+		width: 72px;
+		height: 72px;
+		display: grid;
+		place-items: center;
+		border-radius: var(--r-card);
+		background: var(--c-container);
+		margin-bottom: var(--s4);
+	}
+	.empty-diamond {
+		width: 14px;
+		height: 14px;
+		border: 1.5px solid var(--c-gold);
+		transform: rotate(45deg);
+	}
+	.empty-title {
+		font-size: var(--fs-h3);
+		line-height: var(--lh-h3);
+		color: var(--c-strong);
+	}
+	.empty-text {
+		margin-top: var(--s2);
+		color: var(--c-secondary);
+	}
+</style>

@@ -2,6 +2,7 @@
 // 相册：像贴在手帐页上的照片——白边、轻微错落的旋转角度、底下手写感的标注（宋体）。
 // 点击放大用原生 <dialog>，键盘左右键切换。
 import { Image } from "astro:assets";
+import EmptyState from "../components/EmptyState.astro";
 import Icon from "../components/Icon.astro";
 import { photos } from "../data/gallery";
 import Base from "../layouts/Base.astro";
@@ -12,8 +13,9 @@ const tilt = [-1.2, 0.8, -0.4, 1.1, -0.9, 0.5, -1.4, 0.9];
 	<header class="page-head">
 		<span class="eyebrow">Album</span>
 		<h1>相册</h1>
-		<p>共 {photos.length} 张。点开可以看大图，左右方向键切换。</p>
+		{photos.length > 0 && <p>共 {photos.length} 张。点开看大图，左右方向键切换。</p>}
 	</header>
+	{photos.length === 0 && <EmptyState title="相册还是空的" text="拍到喜欢的照片，会贴在这一页。" />}
 	<ul class="album">
 		{photos.map((p, i) => (
 			<li class="photo" style={`--tilt:${tilt[i % tilt.length]}deg`}>

@@ -24,11 +24,12 @@ export const profile: { avatar: ImageMetadata; links: { name: string; url: strin
 };
 
 // 竖排索引签：顺序即显示顺序。文字建议 2 个字，竖排最整齐
-export const nav = [
+// hideWhenEmpty：对应数据为空时不显示这个页签（项目、相册）
+export const nav: { name: string; url: string; hideWhenEmpty?: boolean }[] = [
 	{ name: "首页", url: "/" },
 	{ name: "归档", url: "/archive/" },
-	{ name: "项目", url: "/projects/" },
-	{ name: "相册", url: "/gallery/" },
+	{ name: "项目", url: "/projects/", hideWhenEmpty: true },
+	{ name: "相册", url: "/gallery/", hideWhenEmpty: true },
 	{ name: "友链", url: "/friends/" },
 	{ name: "关于", url: "/about/" },
 ];

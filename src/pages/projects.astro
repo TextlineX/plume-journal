@@ -1,5 +1,6 @@
 ---
 // 项目：一张状态清单。编号 + 名称 + 状态（菱形记号：实心金 = 进行中，实心紫 = 已上线，空心 = 已归档）
+import EmptyState from "../components/EmptyState.astro";
 import Icon from "../components/Icon.astro";
 import { projects } from "../data/projects";
 import Base from "../layouts/Base.astro";
@@ -11,7 +12,8 @@ import { pad } from "../lib/posts";
 		<h1>项目</h1>
 		<p>做过和正在做的东西。</p>
 	</header>
-	<ol class="projects">
+	{projects.length === 0 && <EmptyState title="还没有登记的项目" text="做出能拿得出手的东西，就放到这一页。" />}
+	{projects.length > 0 && <ol class="projects">
 		{projects.map((p, i) => (
 			<li class="proj">
 				<span class="proj-no latin" aria-hidden="true">{pad(i + 1)}</span>
@@ -33,7 +35,7 @@ import { pad } from "../lib/posts";
 				</div>
 			</li>
 		))}
-	</ol>
+	</ol>}
 </Base>
 
 <style>

@@ -1,6 +1,7 @@
 ---
 // 首页 = 手帐的扉页 + 目录。第 1 页有刊头；之后的页只有目录标题。
 import type { GetStaticPaths, Page } from "astro";
+import EmptyState from "../components/EmptyState.astro";
 import Icon from "../components/Icon.astro";
 import Pagination from "../components/Pagination.astro";
 import Portrait from "../components/Portrait.astro";
@@ -51,6 +52,7 @@ const issueDate = latest ? `${latest.data.published.getUTCFullYear()}.${pad(late
 			<span class="ct-latin latin">Contents</span>
 			<span class="ct-count caption">共 {page.total} 篇{!first && ` · 第 ${page.currentPage} / ${page.lastPage} 页`}</span>
 		</div>
+		{page.data.length === 0 && <EmptyState title="还没有文章" text="第一篇正在写。" />}
 		<div class="ct-list">
 			{page.data.map((post, i) => <PostEntry post={post} featured={first && i === 0} />)}
 		</div>

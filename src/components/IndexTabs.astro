@@ -1,20 +1,26 @@
 ---
 // 竖排索引签：像手帐侧边的分隔页签。站名竖排在最上，页签在中间，工具按钮在底部。
-// 竖排遵循 W3C clreq 直排规则：writing-mode: vertical-rl，汉字正立，拉丁字母不出现在页签里。
-import { nav, site } from "../site.config";
+// 竖排遵循 W3C clreq 直排规则：writing-mode: vertical-rl，汉字正立；
+// 站名里的拉丁字母按规则横躺排（sideways），只给汉字加字距，拉丁段保持正常字距。
+import { isActive as active, splitTitle, visibleNav } from "../lib/nav";
+import { music, site } from "../site.config";
 import Icon from "./Icon.astro";
 
 const path = Astro.url.pathname;
-const isActive = (url: string) => (url === "/" ? path === "/" || /^\/(page|posts)\//.test(path) : path.startsWith(url));
+const isActive = (url: string) => active(path, url);
+const titleRuns = splitTitle(site.title);
+const titleLong = [...site.title].length > 6;
 ---
 <nav class="tabs" aria-label="主导航">
 	<a href="/" class="tabs-title serif" aria-label={`${site.title}，回到首页`}>
 		<span class="diamond" aria-hidden="true"></span>
-		<span class="tabs-title-text">{site.title}</span>
+		<span class:list={["tabs-title-text", { long: titleLong }]}>
+			{titleRuns.map((r) => <span class:list={{ latin: r.latin }}>{r.text}</span>)}
+		</span>
 	</a>
 
 	<ul class="tabs-list">
-		{nav.map((item) => (
+		{visibleNav.map((item) => (
 			<li>
 				<a href={item.url} class:list={["tab", { active: isActive(item.url) }]} aria-current={isActive(item.url) ? "page" : undefined}>
 					<span class="tab-mark" aria-hidden="true"></span>
@@ -26,7 +32,7 @@ const isActive = (url: string) => (url === "/" ? path === "/" || /^\/(page|posts
 
 	<div class="tabs-tools">
 		<button type="button" class="icon-btn" data-open-search aria-label="搜索（快捷键 /）"><Icon name="search" /></button>
-		<button type="button" class="icon-btn" data-open-music aria-label="音乐"><Icon name="music" /></button>
+		{music.enable && <button type="button" class="icon-btn" data-open-music aria-label="音乐"><Icon name="music" /></button>}
 		<button type="button" class="icon-btn" data-theme-toggle aria-label="切换深浅模式">
 			<Icon name="sun" class="ic-sun" />
 			<Icon name="moon" class="ic-moon" />
@@ -56,14 +62,26 @@ const isActive = (url: string) => (url === "/" ? path === "/" || /^\/(page|posts
 		line-height: 1;
 		letter-spacing: 0.32em;
 	}
+	/* 拉丁字母横躺排，不加汉字的字距；与后面的汉字之间留 0.25em */
+	.tabs-title-text .latin {
+		text-orientation: sideways;
+		letter-spacing: 0.04em;
+		font-family: var(--font-latin);
+		font-size: 1.1em;
+		margin-block-end: 0.25em;
+	}
+	/* 长站名（超过 6 个字）降一级字号，避免把页签挤出屏幕 */
+	.tabs-title-text.long {
+		font-size: var(--fs-body);
+		letter-spacing: 0.24em;
+	}
 	.tabs-list {
 		list-style: none;
 		padding: 0;
 		display: flex;
 		flex-direction: column;
 		gap: var(--s1);
-		flex: 1;
-		min-height: 0;
+		flex: 1 0 auto;
 	}
 	.tab {
 		position: relative;
