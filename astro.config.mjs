@@ -4,7 +4,7 @@ import { defineConfig } from "astro/config";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
 
 export default defineConfig({
-	site: "https://your-domain.com",
+	site: "https://blog.textline.top",
 	trailingSlash: "always",
 	integrations: [sitemap()],
 	markdown: {

@@ -5,11 +5,11 @@ import charDay from "./assets/character/day.png";
 import charNight from "./assets/character/night.png";
 
 export const site = {
-	title: "我的博客",
-	subtitle: "记录、折腾与思考",
+	title: "Textline的博客",
+	subtitle: "随便写写",
 	// 首页目录上方的一段自我介绍（衬线体）
-	intro: "写代码，也写点别的。这里是我的手帐：做过的东西、踩过的坑、偶尔的随想。",
-	author: "博主",
+	intro: "随便写点东西。",
+	author: "Textline",
 	lang: "zh-CN",
 	eyebrow: "Plume Journal",
 	postsPerPage: 8,
@@ -18,7 +18,7 @@ export const site = {
 export const profile: { avatar: ImageMetadata; links: { name: string; url: string; icon: IconName }[] } = {
 	avatar,
 	links: [
-		{ name: "GitHub", url: "https://github.com/", icon: "github" },
+		{ name: "GitHub", url: "https://github.com/TextlineX", icon: "github" },
 		{ name: "RSS", url: "/rss.xml", icon: "rss" },
 	],
 };
@@ -39,7 +39,7 @@ export const character = { day: charDay, night: charNight, focusX: 0.74, focusY:
 
 // 音乐：src 放在 public/music/ 下，例如 "/music/song.mp3"
 export const music: { enable: boolean; volume: number; playlist: { title: string; artist: string; src: string }[] } = {
-	enable: true,
+	enable: false,
 	volume: 0.6,
 	playlist: [],
 };
