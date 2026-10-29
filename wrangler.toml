@@ -1,3 +1,6 @@
 name = "plume-journal"
-pages_build_output_dir = "dist"
 compatibility_date = "2026-10-28"
+
+[assets]
+directory = "./dist"
+not_found_handling = "404-page"
